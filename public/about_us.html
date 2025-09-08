@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Role</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #f6f5f7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: 'Montserrat', sans-serif;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav {
+            width: 100%;
+            background-color: #5D8736;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: larger;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo video {
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+            border-radius: 5px;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+        }
+
+        nav ul li {
+            margin: 0 15px;
+            padding: 7px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        nav ul li a:hover {
+            color: #F4FFC3;
+        }
+
+        .wrapper {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            width: 100%;
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .option {
+            padding: 20px 40px;
+            border-radius: 8px;
+            background: #4CAF50;
+            color: white;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+
+        .option:hover {
+            background: #388E3C;
+        }
+
+        .background {
+            background: url('agri.webp') no-repeat center center/cover;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .line {
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        /* Footer */
+        footer {
+            background: white;
+            color: #809D3C;
+            padding: 30px 0;
+            text-align: center;
+            width: 100%;
+            border-top: 2px solid #5D8736;
+        }
+
+        .footer-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: auto;
+            padding: 10px 20px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            font-size: 22px;
+            font-weight: bold;
+            color: #5D8736;
+        }
+
+        .footer-logo video {
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+            border-radius: 5px;
+        }
+
+        .footer-contact, .footer-social {
+            text-align: center;
+        }
+
+        .footer-social a img {
+            width: 30px;
+            margin: 0 10px;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .footer-social a img:hover {
+            transform: scale(1.2);
+        }
+
+        .footer-copy {
+            margin-top: 15px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body class="background">
+    <nav>
+        <div class="logo">
+            <video autoplay loop muted>
+                <source src="image/agridirect.mp4" type="video/mp4">
+            </video>
+            <span class="logo-text">AgriDirect</span>
+        </div>
+        <ul>
+            <li><a href="shared_homepage.html">HOME</a></li>
+            <li><a href="marketplace.html">MARKETPLACE</a></li>
+            <li><a href="qr-scan.html">SCAN QR CODE</a></li>
+            <li><a href="about.html">ABOUT US</a></li>
+            <li><a href="login187.html">LOGIN/SIGN UP</a></li>
+        </ul>
+    </nav>
+
+    <div class="wrapper">
+        <h1 class="line">What Is Your choice !!</h1>
+        <div class="container">
+            <div class="option" onclick="redirectTo('our_moto.html')">our moto</div>
+            <div class="option" onclick="redirectTo('our_team.html')">our team</div>
+        </div>
+    </div>
+
+    <script>
+        function redirectTo(page) {
+            window.location.href = page;
+        }
+    </script>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-logo">
+                <video autoplay loop muted playsinline>
+                    <source src="image/logo.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <span>AgriDirect</span>
+            </div>
+
+            <div class="footer-contact">
+                <h3>Contact Us</h3>
+                <p>Email: support@agriDirect.com</p>
+                <p>Phone: +91 10101 01010</p>
+            </div>
+
+            <div class="footer-social">
+                <h3>Follow Us</h3>
+                <a href="#"><img src="image/linkedin.png" alt="LinkedIn"></a>
+                <a href="#"><img src="image/twitter.png" alt="Twitter"></a>
+                <a href="#"><img src="image/instagram.png" alt="Instagram"></a>
+                <a href="#"><img src="image/youtube.png" alt="YouTube"></a>
+            </div>
+        </div>
+        <p class="footer-copy">&copy; 2025 Agridirect. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>

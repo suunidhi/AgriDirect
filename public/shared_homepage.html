@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriDirect - Bridging Farmers & Consumers</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+<style>/* Vertical border blocks */
+    .vertical-border {
+        position: fixed;
+        top: 0;
+        width: 30px;
+        height: 100%;
+        background-color: rgba(255, 182, 193, 0.3); /* Light Magenta */
+        z-index: -1;
+    }
+    
+    .left {
+        left: 0;
+    }
+    
+    .right {
+        right: 0;
+    }
+    @keyframes jigglyText {
+        0% { transform: translateY(0px); }
+        25% { transform: translateY(-3px); }
+        50% { transform: translateY(3px); }
+        75% { transform: translateY(-3px); }
+        100% { transform: translateY(0px); }
+    }
+    
+            /* General Styles */
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: Arial, sans-serif;
+            }
+            /* Background Image for Full Website */
+    /* Background Image for Full Website */
+    body {
+        background: url('bg-image.png') no-repeat center center fixed;
+        background-size: cover;
+        background-attachment: fixed;
+        color: #2C3E50;
+        position: relative;
+    }
+    
+    /* Overlay for better readability */
+    .body-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.2); /* Light overlay */
+        z-index: -1;
+    }
+    
+    /* Text on Background */
+    .bg-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: white;
+        font-size: 32px;
+        font-weight: bold;
+        text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+    }
+    
+            
+            /* Navbar */
+            nav {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                background:#5D8736;
+                padding: 15px 30px;
+                font-size: larger;
+            }
+            .logo {
+                display: flex;
+                align-items: center;
+            }
+            .logo video {
+                width: 50px;
+                height: 50px;
+                margin-right: 10px;
+                border-radius: 5px;
+            }
+            .logo-text {
+                font-size: 24px;
+                font-weight: bold;
+                color:#ffffff;
+            }
+            nav ul {
+                list-style: none;
+                display: flex;
+            }
+            nav ul li {
+                margin: 0 15px;
+                padding: 7px;
+            }
+            nav ul li a {
+                text-decoration: none;
+                color: #ffffff;
+                font-weight: bold;
+    
+            }
+            nav ul li a:hover{
+                color:#F4FFC3;
+            }
+            
+            /* Hero Section */
+            .hero {
+                text-align: center;
+                padding: 80px 20px;
+                background: #A9C46C;
+                color: white;
+            }
+            .hero h1 {
+                font-size: 36px;
+                margin-bottom: 10px;
+            }
+            .hero p {
+                font-size: 18px;
+                margin-bottom: 20px;
+            }
+            .cta-button {
+                display: inline-block;
+                padding: 10px 20px;
+                background: #2C3E50;
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
+                font-size: 18px;
+            }
+             /* Mission Section */
+             .mission {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 60px 20px;
+                background-color: #ffffff;
+                color: #2C3E50;
+            }
+            .mission img {
+                width: 40%;
+                max-width: 400px;
+                border-radius: 10px;
+                margin-right: 20px;
+                animation: jigglyText 0.5s ease-in-out 2;
+            }
+                
+            
+            .mission-content {
+                max-width: 600px;
+            }
+            .mission h2 {
+                font-size: 32px;
+                margin-bottom: 15px;
+            }
+            .mission p {
+                font-size: 18px;
+                line-height: 1.5;
+            }
+            
+            /* Features Section */
+            .features {
+                display: flex;
+                justify-content: space-around;
+                padding: 50px 20px;
+                background-color:#ffffff;
+            }
+            .feature {
+                text-align: center;
+                width: 30%;
+            }
+            .feature img {
+                width: 80px;
+                height: 80px;
+                margin-bottom: 20px;
+            }
+            .feature h3 {
+                font-size: 24px;
+                margin-bottom: 10px;
+            }
+            .feature p {
+                font-size: 16px;
+                color: #000000;
+            }
+           
+            .feature img {
+                display: inline-block;
+                font-size: 18px;
+                font-weight: normal;
+                animation: jigglyText 0.5s ease-in 1;
+            }
+            /* How It Works Section */
+            .how-it-works {
+                text-align: center;
+                padding: 60px 20px;
+                background-color:#F4FFC3;
+            }
+            .how-it-works h2 {
+                font-size: 32px;
+                margin-bottom: 15px;
+            }
+            .how-it-works p {
+                font-size: 18px;
+                max-width: 800px;
+                margin: 0 auto 20px;
+                line-height: 1.5;
+                text-align: center;
+            }
+            .how-it-works video {
+                width: 80%;
+                max-width: 800px;
+                border-radius: 10px;
+            }
+            /* Footer */
+            footer {
+                background:white;
+                color:#809D3C;
+                padding: 30px 20px;
+                text-align: center;
+                border-top: 2px solid #5D8736
+            }
+            
+            .footer-container {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                max-width: 1200px;
+                margin: auto;
+            }
+            
+            .footer-logo {
+                display: flex;
+                align-items: center;
+                font-size: 22px;
+                font-weight: bold;
+            }
+            
+            .footer-logo video {
+                width: 50px;
+                height: 50px;
+                margin-right: 10px;
+                border-radius: 5px;
+            }
+            
+            .footer-contact, .footer-social {
+                text-align: left;
+            }
+            
+            .footer-social a img {
+                width: 30px;
+                margin: 0 10px;
+                transition: transform 0.3s ease-in-out;
+            }
+            
+            .footer-social a img:hover {
+                transform: scale(1.2);
+            }
+            
+            .footer-copy {
+                margin-top: 15px;
+                font-size: 14px;
+                opacity: 0.8;
+            }
+            .background {
+      background: url('agri.webp') no-repeat center center/cover;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+  }
+            
+    </style></head>
+<body class="background">
+    <body>
+        <div class="vertical-border left"></div>
+        <div class="vertical-border right"></div>
+    </body>
+    
+    <header>
+        <nav>
+            <div class="logo">
+                <video autoplay loop muted>
+                    <source src="image/agridirect.mp4" type="video/mp4">
+                </video>
+                <span class="logo-text">AgriDirect</span>
+            </div>
+            <ul>
+                <li><a href="shared_homepage.html">HOME</a></li>
+                <li><a href="Marketplace.html">MARKETPLACE</a></li>
+                <li><a href="qr-scan.html">SCAN QR CODE</a></li>
+                <li><a href="about_us.html">ABOUT US</a></li>
+                <li><a href="login187.html">LOGIN/SIGN UP</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    
+    
+    <section class="hero">
+        <h1>Connecting Natural Farmers & Conscious Consumers</h1>
+        <p>Buy directly from verified farmers with full product traceability.</p>
+        <a href="marketplace.html" class="cta-button">Explore Marketplace</a>
+    </section>
+
+    <section class="mission">
+        <img src="image/farmer1.png" alt="Farming Mission">
+        <div class="mission-content">
+        <h2>Our Mission & Passion</h2>
+        <p>At AgriDirect, we empower natural farmers by providing them with an independent digital marketplace, free from middlemen. Our QR code verification system ensures transparency, allowing consumers to trace product origins, verify farming methods, and support ethical agriculture. Join us in revolutionizing the way we connect with our food sources.</p>
+       <p>AgriDirect does not buy or sell crops and is not a broker. Instead, we offer you the ability to effortlessly market your crop via our platform.</p> <button type="button" class="btn btn-outline-success" background-color="#74ab4e"><a href="login.html" text-decoration=none></a>Get In Touch</a></button>
+    </section>
+    
+
+    <section class="how-it-works">
+        <h2>How It Works</h2>
+        <div class="video-container">
+            <video autoplay loop muted playsinline>
+                <source src="image/how-it-works.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        <p>AgriDirect empowers farmers with <b>"QR-based verification"</b>, connects them to consumers, and ensures fair pricing & transparency.</p>
+        <p>1.Farmer Verification – Farmers register, get verified, and receive a unique QR code & certification.</p>
+          <p>2.Product Listing – Verified farmers list their natural products on the digital marketplace.</p>
+        <p>3.Consumer Purchase – Buyers browse, scan QR codes for authenticity, and make secure purchases.</p>
+        <p>4.Order & Delivery – Farmers process orders and deliver directly to consumers.</p>
+        <p>5.Impact – Fair pricing for farmers, authentic natural food for consumers, and a transparent supply chain.</p>
+        </section>
+    
+
+
+    <section class="features">
+        <div class="feature">
+            <img src="image/transparancy.png" alt="Transparency Icon">
+            <h3>Transparency</h3>
+            <p>Ensuring clear and open transactions between farmers and consumers.</p>
+        </div>
+        <div class="feature">
+            <img src="image/fairtrade.png" alt="Fair Trade Icon">
+            <h3>Fair Trade</h3>
+            <p>Redistributing value in the food supply chain for equitable growth.</p>
+        </div>
+        <div class="feature">
+            <img src="image/user-friendly.png" alt="User Friendly Icon">
+            <h3>User Friendly</h3>
+            <p>Reducing costs to buyers without compromising reliability.</p>
+       
+    </section>
+    
+    <footer>
+        <div class="footer-container">
+            <div class="footer-logo">
+                <video autoplay loop muted playsinline>
+                    <source src="image/logo.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <span>AgriDirect</span>
+            </div>
+    
+            <div class="footer-contact">
+                <h3>Contact Us</h3>
+                <p>Email: support@agriDirect.com</p>
+                <p>Phone: +91 10101 01010</p>
+            </div>
+    
+            <div class="footer-social">
+                <h3>Follow Us</h3>
+                <a href="#"><img src="image/linkedin.png" alt="LinkedIn"></a>
+                <a href="#"><img src="image/twitter.png" alt="Twitter"></a>
+                <a href="#"><img src="image/instagram.png" alt="Instagram"></a>
+                <a href="#"><img src="image/youtube.png" alt="YouTube"></a>
+            </div>
+        </div>
+        <p class="footer-copy">&copy; 2025 Agridirect. All Rights Reserved.</p>
+    </footer>
+    
+</body>
+</html>

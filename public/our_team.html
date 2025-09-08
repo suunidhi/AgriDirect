@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Team</title>
+    <style>
+        * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Montserrat', sans-serif;
+  height: 100vh;
+  margin: 0;
+}nav {
+  width: 100%;
+  background-color: #5D8736;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: larger;
+  position: fixed; /* Fixed navbar at the top */
+  top: 0;
+  left: 0;
+  z-index: 1000; /* Ensure it stays on top */
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo video {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+  border-radius: 5px;
+}
+
+.logo-text {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+}
+
+nav ul li {
+  margin: 0 15px;
+  padding: 7px;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+nav ul li a:hover {
+  color: #F4FFC3;
+}
+
+        /* Reset margins and padding */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .back{
+            flex: 1; /* This will make sure content expands properly */
+
+        }
+
+
+        /* Team Section */
+       
+
+        .team-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            background-color: #a9e173;
+            height: max-content;
+        }
+
+        .team-member {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease-in-out;
+            max-width: 200px;
+        }
+        .kp{
+          margin-top: 100px;
+        }
+
+        .team-member img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .team-member:hover {
+            transform: scale(1.1);
+        }
+
+        .team-member:hover img {
+            transform: scale(1.2);
+        }
+
+        .name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .contact {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .solid-line {
+    border: none;
+    border-top: 3px dashed #2e7d32; /* Change color and thickness here */
+    margin: 1.5rem 0;
+    width: 100%;
+  }
+        h1 {
+            color: #486e25;
+    font-size: 2.5rem;
+    margin-top: 2.5rem;
+    margin-bottom: 0.1rem;
+    border-color: rgb(61, 240, 139);
+    border-radius: 25px;
+    text-align: center;
+    text-decoration:#5D8736;
+  }
+  
+        /* Footer */
+        footer {
+  margin-top: auto; /* Pushes the footer to the bottom */
+  background: white;
+  color: #809D3C;
+  padding: 30px 0;
+  text-align: center;
+  width: 100%;
+  border-top: 2px solid #5D8736;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: auto;
+    padding: 10px 20px;
+}
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+    font-size: 22px;
+    font-weight: bold;
+    color: #5D8736;
+}
+
+.footer-logo video {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+    border-radius: 5px;
+}
+
+.footer-contact, .footer-social {
+    text-align: center;
+}
+
+.footer-social a img {
+    width: 30px;
+    margin: 0 10px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.footer-social a img:hover {
+    transform: scale(1.2);
+}
+
+.footer-copy {
+    margin-top: 15px;
+    font-size: 14px;
+    opacity: 0.8;
+}
+    </style>
+</head>
+<body class="back">
+    <nav>
+        <div class="logo">
+            <video autoplay loop muted>
+                <source src="image/agridirect.mp4" type="video/mp4">
+            </video>
+            <span class="logo-text">AgriDirect</span>
+        </div>
+        <ul>
+            <li><a href="shared_homepage.html">HOME</a></li>
+            <li><a href="marketplace.html">MARKETPLACE</a></li>
+            <li><a href="qr-scan.html">SCAN QR CODE</a></li>
+            <li><a href="about_us.html">ABOUT US</a></li>
+            <li><a href="login187.html">LOGIN/SIGN UP</a></li>
+        </ul>
+      </nav>
+      
+      <hr   class="solid-line" />
+      <h1> Meet Our Team</h1>
+       <hr  class="solid-line" />
+        <div class="team-container">
+            <div class="team-member">
+                <img src="image/kpr.jpg" alt="Member 1">
+                <div class="name">Khushi Rana <br>
+                    Frontend-Developer</div>
+                <div class="contact">📞 123-456-7890</div>
+            </div>
+            <div class="team-member">
+                <img src="image/shikhudi.jpg" alt="Member 2">
+                <div class="name">Shikhaa Shah<br>full stack Developer</div>
+                <div class="contact">📞 987-654-3210</div>
+            </div>
+            <div class="team-member">
+                <img src="image/kri.jpg" alt="Member 3">
+                <div class="name">Kritika Singh<br>backend-Developer</div>
+                <div class="contact">📞 555-123-4567</div>
+            </div>
+        </div>
+        <footer>
+          <div class="footer-container">
+              <div class="footer-logo">
+                  <video autoplay loop muted playsinline>
+                      <source src="image/logo.mp4" type="video/mp4">
+                      Your browser does not support the video tag.
+                  </video>
+                  <span>AgriDirect</span>
+              </div>
+      
+              <div class="footer-contact">
+                  <h3>Contact Us</h3>
+                  <p>Email: support@agriDirect.com</p>
+                  <p>Phone: +91 10101 01010</p>
+              </div>
+      
+              <div class="footer-social">
+                  <h3>Follow Us</h3>
+                  <a href="#"><img src="image/linkedin.png" alt="LinkedIn"></a>
+                  <a href="#"><img src="image/twitter.png" alt="Twitter"></a>
+                  <a href="#"><img src="image/instagram.png" alt="Instagram"></a>
+                  <a href="#"><img src="image/youtube.png" alt="YouTube"></a>
+              </div>
+          </div>
+          <p class="footer-copy">&copy; 2025 Agridirect. All Rights Reserved.</p>
+      </footer>
+      
+
+</body>
+</html>

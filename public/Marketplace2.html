@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Marketplace - AgriDirect</title>
+
+  <!-- Keep your palette & feel -->
+  <style>
+    /* Reset & Base */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background-color: #f5f7f5; color: #333; }
+
+    /* Navbar (from your style) */
+    nav { display: flex; justify-content: space-between; align-items: center; background:#5D8736; padding: 15px 30px; font-size: larger; }
+    .logo { display: flex; align-items: center; }
+    .logo video { width: 50px; height: 50px; margin-right: 10px; border-radius: 5px; }
+    .logo-text { font-size: 24px; font-weight: bold; color:#ffffff; }
+    nav ul { list-style: none; display: flex; }
+    nav ul li { margin: 0 15px; padding: 7px; }
+    nav ul li a { text-decoration: none; color: #ffffff; font-weight: bold; }
+    nav ul li a:hover{ color:#F4FFC3; }
+
+    /* Headings / separators */
+    h1 { font-size: 2.2rem; margin: 18px 0 8px; text-align: center; color:#2e7d32; }
+    .solid-line { border: none; border-top: 3px solid #2e7d32; margin: 1.2rem auto; width: 95%; }
+
+    /* Filters */
+    .filters-wrap { display:flex; flex-wrap: wrap; gap:10px; justify-content:center; padding: 10px 16px; }
+    .filters-wrap input, .filters-wrap select {
+      padding: 10px; border: 2px solid #2e7d32; border-radius: 6px; font-size: 1rem; background:#fff; min-width: 160px;
+    }
+
+    /* Category quick buttons (optional) */
+    .buttons-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 10px 0 4px; }
+    .category-button { background-color: #ffffff; border: 2px solid #2e7d32; color: #2e7d32;
+      font-size: 1rem; padding: 10px 18px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+    .category-button:hover { background-color: #2e7d32; color: white; }
+
+    /* Product grid */
+    .marketplace { padding: 10px 16px 24px; }
+    .product-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 18px; max-width: 1200px; margin: 0 auto; }
+    .product-card { background:#fff; border:2px solid #2e7d32; border-radius:10px; padding:14px; box-shadow:0 2px 8px rgba(0,0,0,0.08); transition:.25s; display:flex; flex-direction:column; }
+    .product-card:hover { transform: translateY(-2px); }
+    .product-card img { width:100%; height:160px; object-fit:cover; border-radius:8px; margin-bottom:10px; background:#f0f0f0; }
+    .product-title { color:#2e7d32; font-weight:600; margin:4px 0; }
+    .meta { font-size:.95rem; margin:2px 0; }
+    .meta small a { color:#2e7d32; text-decoration:none; }
+    .btn-row { margin-top:auto; display:flex; gap:8px; flex-wrap:wrap; }
+    .btn { flex:1; padding:10px 12px; border:none; border-radius:8px; cursor:pointer; font-weight:600; }
+    .btn-qr { background:#3498db; color:#fff; }
+    .btn-add { background:#2e7d32; color:#fff; }
+    .btn-buy { background:#f39c12; color:#fff; }
+
+    /* Floating Cart */
+    .cart-fab { position:fixed; right:18px; bottom:18px; width:56px; height:56px; border-radius:50%;
+      background:#5D8736; color:#fff; display:flex; align-items:center; justify-content:center; font-size:24px;
+      box-shadow:0 6px 18px rgba(0,0,0,.2); cursor:pointer; }
+    .cart-badge { position:absolute; top:-6px; right:-6px; background:red; color:#fff; border-radius:999px; padding:2px 7px; font-size:12px; }
+
+    /* Farmer Add Product FAB (only when role === farmer) */
+    .add-fab { position:fixed; left:18px; bottom:18px; width:56px; height:56px; border-radius:50%;
+      background:#2e7d32; color:#fff; display:none; align-items:center; justify-content:center; font-size:30px;
+      box-shadow:0 6px 18px rgba(0,0,0,.2); cursor:pointer; text-decoration:none; }
+
+    /* Cart Modal */
+    .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); align-items:center; justify-content:center; padding: 12px; }
+    .modal-inner { background:#fff; width:100%; max-width:540px; border-radius:12px; padding:18px; }
+    .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+    .close-x { background:none; border:none; font-size:22px; cursor:pointer; color:#c0392b; }
+    .cart-list { list-style:none; margin:10px 0; padding:0; }
+    .cart-item { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #eee; }
+    .qty { display:flex; gap:6px; align-items:center; }
+    .qty button { width:26px; height:26px; border:none; border-radius:6px; background:#5D8736; color:#fff; cursor:pointer; }
+    .checkout-btn { width:100%; margin-top:12px; padding:12px; border:none; border-radius:8px; background:#5D8736; color:#fff; font-weight:700; cursor:pointer; }
+    .empty { text-align:center; color:#777; margin:16px 0; }
+
+    /* Responsive tweaks */
+    @media (max-width:560px){
+      .filters-wrap input, .filters-wrap select { min-width: 46%; }
+      .btn { flex: 1 1 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="logo">
+      <video autoplay loop muted>
+        <source src="image/agridirect.mp4" type="video/mp4">
+      </video>
+      <span class="logo-text">AgriDirect</span>
+    </div>
+    <ul>
+      <li><a href="shared_homepage.html">HOME</a></li>
+      <li><a href="Marketplace.html">MARKETPLACE</a></li>
+      <li><a href="qr-scan.html">SCAN QR CODE</a></li>
+      <li><a href="about_us.html">ABOUT US</a></li>
+      <li><a href="login187.html">LOGIN/SIGN UP</a></li>
+    </ul>
+  </nav>
+
+  <!-- Header -->
+  <h1>🌱 Marketplace</h1>
+  <p style="text-align:center;">Buy fresh, verified produce directly from farmers</p>
+  <hr class="solid-line" />
+
+  <!-- Filters -->
+  <section class="filters-wrap" id="filters">
+    <input type="text" id="q" placeholder="Search products..." />
+    <select id="category">
+      <option value="">All Categories</option>
+      <option value="Vegetables">Vegetables</option>
+      <option value="Fruits">Fruits</option>
+      <option value="Grains">Grains</option>
+      <option value="Dairy">Dairy</option>
+      <option value="Spices">Spices</option>
+    </select>
+    <input type="number" id="min" placeholder="Min ₹" />
+    <input type="number" id="max" placeholder="Max ₹" />
+    <input type="text" id="farmer" placeholder="Farmer name" />
+    <input type="text" id="location" placeholder="Location" />
+  </section>
+
+  <!-- Quick category buttons (optional – same theme) -->
+  <div class="buttons-container">
+    <button class="category-button" data-cat="">All</button>
+    <button class="category-button" data-cat="Fruits">🍎 Fruits</button>
+    <button class="category-button" data-cat="Vegetables">🥕 Vegetables</button>
+    <button class="category-button" data-cat="Grains">🌾 Grains</button>
+    <button class="category-button" data-cat="Dairy">🥛 Dairy</button>
+  </div>
+
+  <!-- Products -->
+  <section class="marketplace">
+    <div id="productGrid" class="product-grid" aria-live="polite"></div>
+  </section>
+
+  <!-- Floating Cart -->
+  <div class="cart-fab" id="cartFab" title="Cart">
+    🛒 <span id="cartCount" class="cart-badge">0</span>
+  </div>
+
+  <!-- Farmer-only Add Product -->
+  <a href="AddProduct.html" id="addFab" class="add-fab" title="Add Product">＋</a>
+
+  <!-- Cart Modal -->
+  <div class="modal" id="cartModal" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+    <div class="modal-inner">
+      <div class="modal-header">
+        <h2 id="cartTitle" style="color:#2e7d32">Your Cart</h2>
+        <button class="close-x" id="closeCart" aria-label="Close cart">✖</button>
+      </div>
+      <ul id="cartList" class="cart-list"></ul>
+      <p style="font-weight:700;">Total: ₹<span id="cartTotal">0</span></p>
+      <button class="checkout-btn" id="checkoutBtn">Checkout</button>
+    </div>
+  </div>
+
+  <script>
+    // ====== CONFIG: adjust these to match your backend endpoints if needed ======
+    const ME_ENDPOINT = "/api/auth/me";            // returns { _id, name, role }
+    const PRODUCTS_ENDPOINT = "/api/products";     // supports query params: q, category, min, max, farmer, location
+    // ===========================================================================
+
+    // State
+    let user = null;                    // { _id, name, role }
+    let products = [];                  // fetched from backend
+    let cart = JSON.parse(localStorage.getItem("agridirect_cart") || "[]");
+
+    // DOM
+    const grid = document.getElementById("productGrid");
+    const addFab = document.getElementById("addFab");
+    const cartFab = document.getElementById("cartFab");
+    const cartModal = document.getElementById("cartModal");
+    const cartList = document.getElementById("cartList");
+    const cartTotalEl = document.getElementById("cartTotal");
+    const cartCount = document.getElementById("cartCount");
+
+    // Helpers
+    const fmt = n => (Math.round(n * 100) / 100).toFixed(2);
+    function qs(sel){ return document.querySelector(sel); }
+    function val(id){ return document.getElementById(id).value.trim(); }
+    function setFabVisibility(){
+      // Show add button only for farmers
+      addFab.style.display = (user && user.role && user.role.toLowerCase() === "farmer") ? "flex" : "none";
+    }
+
+    // Fetch current user (role)
+    async function fetchMe(){
+      try {
+        const res = await fetch(ME_ENDPOINT, { credentials: "include" });
+        if(res.ok){ user = await res.json(); } else { user = null; }
+      } catch(e){ user = null; }
+      setFabVisibility();
+    }
+
+    // Build query string from filters
+    function buildQuery(){
+      const params = new URLSearchParams();
+      const q = val("q"), category = val("category"), min = val("min"), max = val("max"),
+            farmer = val("farmer"), location = val("location");
+      if(q) params.set("q", q);
+      if(category) params.set("category", category);
+      if(min) params.set("min", min);
+      if(max) params.set("max", max);
+      if(farmer) params.set("farmer", farmer);
+      if(location) params.set("location", location);
+      return params.toString() ? `?${params.toString()}` : "";
+    }
+
+    // Load products from backend
+    async function loadProducts(){
+      grid.innerHTML = `<div class="product-card"><div class="meta">Loading products...</div></div>`;
+      try{
+        const res = await fetch(PRODUCTS_ENDPOINT + buildQuery(), { credentials: "include" });
+        products = res.ok ? await res.json() : [];
+      }catch(e){ products = []; }
+      renderProducts();
+    }
+
+    // Render product cards
+    function renderProducts(){
+      if(!products || products.length === 0){
+        grid.innerHTML = `<div class="product-card"><div class="meta">No products found.</div></div>`;
+        return;
+      }
+      grid.innerHTML = products.map(p => {
+        const id = p._id || p.id;
+        const img = p.image || p.imageUrl || "image/placeholder.jpg";
+        const name = p.name || "Product";
+        const unit = p.unit || "kg";
+        const price = p.pricePerUnit ?? p.price ?? 0;
+        const qty = p.quantity ?? p.stock ?? 0;
+        const farmerName = p.farmerName || (p.farmer && (p.farmer.name || p.farmer.fullName)) || "Farmer";
+        const farmerId = (p.farmer && (p.farmer._id || p.farmer.id)) || p.farmerId || "";
+        const location = p.location || "-";
+        return `
+          <article class="product-card" aria-label="${name}">
+            <img src="${img}" alt="${name}">
+            <h3 class="product-title">${name}</h3>
+            <p class="meta">₹${fmt(price)} / ${unit}</p>
+            <p class="meta">Available: ${qty} ${unit}</p>
+            <p class="meta"><small>👨‍🌾 <a href="farmer-profile.html?id=${encodeURIComponent(farmerId)}">${farmerName}</a> &nbsp; • &nbsp; 📍 ${location}</small></p>
+            <div class="btn-row">
+              <button class="btn btn-qr" onclick="verifyQR('${id}')">QR Verify</button>
+              <button class="btn btn-add" onclick="addToCart('${id}')">Add to Cart</button>
+              <button class="btn btn-buy" onclick="buyNow('${id}')">Buy Now</button>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    // QR verify (routes to your scanner with product id)
+    function verifyQR(productId){
+      window.location.href = `qr-scan.html?product=${encodeURIComponent(productId)}`;
+    }
+
+    // Cart logic
+    function persistCart(){ localStorage.setItem("agridirect_cart", JSON.stringify(cart)); }
+    function addToCart(productId, qty=1){
+      const p = products.find(x => (x._id||x.id) === productId);
+      if(!p) return;
+      const existing = cart.find(i => i.productId === productId);
+      if(existing){ existing.qty += qty; } else {
+        cart.push({ productId, name: p.name, price: p.pricePerUnit ?? p.price ?? 0, qty, image: p.image || p.imageUrl || "" });
+      }
+      updateCartUI();
+    }
+    function updateCartUI(){
+      cartList.innerHTML = "";
+      if(cart.length === 0){ cartList.innerHTML = `<li class="empty">Your cart is empty.</li>`; }
+      let total = 0;
+      cart.forEach((item, idx) => {
+        const line = (item.price||0) * (item.qty||1);
+        total += line;
+        cartList.innerHTML += `
+          <li class="cart-item">
+            <span>${item.name} &times; ${item.qty}</span>
+            <span>₹${fmt(line)} 
+              <span class="qty">
+                <button onclick="decQty(${idx})">-</button>
+                <button onclick="incQty(${idx})">+</button>
+                <button style="background:#c0392b" onclick="removeItem(${idx})">✖</button>
+              </span>
+            </span>
+          </li>
+        `;
+      });
+      cartTotalEl.textContent = fmt(total);
+      cartCount.textContent = cart.reduce((a,c)=>a+(c.qty||1),0);
+      persistCart();
+    }
+    function incQty(i){ cart[i].qty += 1; updateCartUI(); }
+    function decQty(i){ cart[i].qty = Math.max(1, cart[i].qty - 1); updateCartUI(); }
+    function removeItem(i){ cart.splice(i,1); updateCartUI(); }
+
+    // Buy now – add single item and open cart
+    function buyNow(productId){
+      addToCart(productId, 1);
+      openCart();
+    }
+
+    // Modal controls
+    function openCart(){ cartModal.style.display = "flex"; }
+    function closeCart(){ cartModal.style.display = "none"; }
+
+    // Checkout (stub – call your backend)
+    async function checkout(){
+      // Example payload; adapt to your API: POST /api/orders
+      const payload = { items: cart.map(c => ({ productId: c.productId, qty: c.qty })) };
+      try{
+        // const res = await fetch('/api/orders', { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify(payload) });
+        // if(res.ok){ cart = []; updateCartUI(); closeCart(); window.location.href = '/order-success.html'; }
+        alert("Checkout flow goes here. Connect to POST /api/orders.");
+      }catch(e){
+        alert("Checkout failed. Please try again.");
+      }
+    }
+
+    // Events
+    // Filter inputs
+    document.querySelectorAll('#filters input, #filters select').forEach(el=>{
+      el.addEventListener('input', debounce(loadProducts, 250));
+      el.addEventListener('change', debounce(loadProducts, 0));
+    });
+
+    // Category quick buttons
+    document.querySelectorAll('.category-button').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        document.getElementById('category').value = btn.dataset.cat || "";
+        loadProducts();
+      });
+    });
+
+    // Cart triggers
+    cartFab.addEventListener('click', openCart);
+    document.getElementById('closeCart').addEventListener('click', closeCart);
+    document.getElementById('checkoutBtn').addEventListener('click', checkout);
+    cartModal.addEventListener('click', (e)=>{ if(e.target === cartModal) closeCart(); });
+
+    // Debounce helper
+    function debounce(fn, wait){
+      let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn.apply(this,args), wait); };
+    }
+
+    // Boot
+    (async function init(){
+      updateCartUI();
+      await fetchMe();
+      await loadProducts();
+    })();
+  </script>
+</body>
+</html>
