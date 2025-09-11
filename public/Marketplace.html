@@ -1,195 +1,266 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Marketplace - Farm to Home</title>
-  
-<style>/* Reset & Base */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  body {
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #f5f7f5;
-    color: #333;
-    text-align: center;
-    padding: 20px;
-  }
-  
-   /* Navbar */
-   nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background:#5D8736;
-    padding: 15px 30px;
-    font-size: larger;
-}
-.logo {
-    display: flex;
-    align-items: center;
-}
-.logo video {
-    width: 50px;
-    height: 50px;
-    margin-right: 10px;
-    border-radius: 5px;
-}
-.logo-text {
-    font-size: 24px;
-    font-weight: bold;
-    color:#ffffff;
-}
-nav ul {
-    list-style: none;
-    display: flex;
-}
-nav ul li {
-    margin: 0 15px;
-    padding: 7px;
-}
-nav ul li a {
-    text-decoration: none;
-    color: #ffffff;
-    font-weight: bold;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marketplace - AgriDirect</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f8f9fa;
+    }
+    main {
+      flex: 1; /* pushes footer down */
+    }
+    h1 {
+      text-align: center;
+      margin: 30px 0;
+      font-weight: bold;
+      color: #2d6a4f;
+    }
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .product-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+      padding: 15px;
+    }
+    .product-card:hover {
+      transform: translateY(-5px);
+    }
+    .product-card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+    .product-info {
+      margin-top: 10px;
+    }
+    .product-info h5 {
+      font-size: 18px;
+      margin-bottom: 5px;
+      color: #1b4332;
+    }
+    .product-info p {
+      margin: 0;
+      font-size: 14px;
+      color: #495057;
+    }
+    .price {
+      font-size: 18px;
+      color: #d00000;
+      font-weight: bold;
+      margin-top: 5px;
+    }
+    .btn-buy {
+      margin-top: 10px;
+      width: 100%;
+      background: #2d6a4f;
+      color: white;
+      border-radius: 8px;
+      border: none;
+      padding: 10px;
+      font-size: 15px;
+      transition: background 0.3s;
+    }
+    .btn-buy:hover {
+      background: #1b4332;
+    }
 
-}
-nav ul li a:hover{
-    color:#F4FFC3;
-}
+    /* Navbar */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background:#5D8736;
+      padding: 15px 30px;
+      font-size: larger;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+    }
+    .logo video {
+      width: 50px;
+      height: 50px;
+      margin-right: 10px;
+      border-radius: 5px;
+    }
+    .logo-text {
+      font-size: 24px;
+      font-weight: bold;
+      color:#ffffff;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+    }
+    nav ul li {
+      margin: 0 15px;
+      padding: 7px;
+    }
+    nav ul li a {
+      text-decoration: none;
+      color: #ffffff;
+      font-weight: bold;
+    }
+    nav ul li a:hover {
+      color:#F4FFC3;
+    }
 
-  
-  
-   h1 {
-    font-size: 2.5rem;
-    margin-top: 1rem;
-    margin-bottom: 0.5rem;
-    border-color: rgb(61, 240, 139);
-    border-radius: 25px;
-  }
-  .solid-line {
-    border: none;
-    border-top: 3px solid #2e7d32; /* Change color and thickness here */
-    margin: 2rem 0;
-    width: 100%;
-  }
-    h3{ 
-    text-align: center;
-    text-decoration:none;
-    text-decoration-style: none;
-  }
-  a{
-    text-decoration:none; 
-  }
-  
-  /* Category Section */
-  .category-section h2 {
-    font-size: 1.8rem;
-    margin-top: 1.5rem;
-    margin-bottom: 1.5rem;
-    color: #2e7d32;
-  }
-  
-  .buttons-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-  }
-  
-  .category-button {
-    background-color: #ffffff;
-    border: 2px solid #2e7d32;
-    color: #2e7d32;
-    font-size: 1.2rem;
-    padding: 15px 30px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .category-button:hover {
-    background-color: #2e7d32;
-    color: white;
-  }
-  
-  /* Footer */
-  footer {
-    margin-top: 4rem;
-    font-size: 0.9rem;
-    color: #888;
-  }
-  .products-list {
-    margin-top: 2rem;
-    text-align: left;
-    max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
-    background-color: #fff;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  }
-  
-  .products-list h3 {
-    margin-bottom: 1rem;
-    color: #2e7d32;
-  }
-  
-  .products-list ul {
-    list-style-type: disc;
-    padding-left: 20px;
-  }
-  
-  .products-list li {
-    margin-bottom: 0.5rem;
-    font-size: 1.1rem;
-  }
+    /* Footer */
+    footer {
+      background:white;
+      color:#809D3C;
+      padding: 30px 20px;
+      text-align: center;
+      border-top: 2px solid #5D8736;
+    }
+    .footer-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      font-size: 22px;
+      font-weight: bold;
+    }
+    .footer-logo video {
+      width: 50px;
+      height: 50px;
+      margin-right: 10px;
+      border-radius: 5px;
+    }
+    .footer-contact, .footer-social {
+      text-align: left;
+    }
+    .footer-social a img {
+      width: 30px;
+      margin: 0 10px;
+      transition: transform 0.3s ease-in-out;
+    }
+    .footer-social a img:hover {
+      transform: scale(1.2);
+    }
+    .footer-copy {
+      margin-top: 15px;
+      font-size: 14px;
+      opacity: 0.8;
+    }
   </style>
 </head>
 <body>
-    <header>
-        <nav>
-            <div class="logo">
-                <video autoplay loop muted>
-                    <source src="image/agridirect.mp4" type="video/mp4">
-                </video>
-                <span class="logo-text">AgriDirect</span>
-            </div>
-            <ul>
-                <li><a href="shared_homepage.html">HOME</a></li>
-                <li><a href="Marketplace.html">MARKETPLACE</a></li>
-                <li><a href="qr-scan.html">SCAN QR CODE</a></li>
-                <li><a href="about_us.html">ABOUT US</a></li>
-                <li><a href="login187.html">LOGIN/SIGN UP</a></li>
-            </ul>
-        </nav>
-    </header>
-  
 
-  <section class="category-section">
-    <hr   class="solid-line" />
-    <h1>🌱 Marketplace</h1>
-    <p>Connecting Farmers & Consumers Directly</p>
-    <hr  class="solid-line" />
-    <h2>Select a Category</h2>
-    <div class="buttons-container">
-      <button class="category-button fruits">🍎 Fruits</button>
-      <button class="category-button vegetables">🥕 Vegetables</button>
-      <button class="category-button crops">🌾 Crops</button>
+  <!-- Navbar -->
+  <header>
+    <nav>
+      <div class="logo">
+        <video autoplay loop muted>
+          <source src="image/agridirect.mp4" type="video/mp4">
+        </video>
+        <span class="logo-text">AgriDirect</span>
+      </div>
+      <ul>
+        <li><a href="shared_homepage.html">HOME</a></li>
+        <li><a href="marketplace.html">MARKETPLACE</a></li>
+        <li><a href="qr-scan.html">SCAN QR CODE</a></li>
+        <li><a href="about_us.html">ABOUT US</a></li>
+        <li><a href="role.html">LOGIN/SIGN UP</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <marquee behavior="scroll" direction="left" scrollamount="8" style="background:#F4FFC3; color:#2d6a4f; font-size:20px; font-weight:bold; padding:10px; border-bottom:2px solid #5D8736;">
+  🌱 Welcome to our website AgriDirect — Bringing Farmers and Consumers Together! 🌱
+</marquee>
+    <div class="container">
+      <div class="product-grid" id="productGrid"></div>
     </div>
-    <div id="products" class="products-list"><a href="about_us.html"><h3>FOR ANY DETAILS CONNECT WITH US!</h3></a></div>
-  </section>
-  
-  <script src="script.js"></script>
-  
+  </main>
+
+  <!-- Footer -->
   <footer>
-    <p>&copy; 2025 Marketplace App. Empowering Farmers.</p>
+    <div class="footer-container">
+      <div class="footer-logo">
+        <video autoplay loop muted playsinline>
+          <source src="image/logo.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+        <span>AgriDirect</span>
+      </div>
+
+      <div class="footer-contact">
+        <h3>Contact Us</h3>
+        <p>Email: support@agriDirect.com</p>
+        <p>Phone: +91 10101 01010</p>
+      </div>
+
+      <div class="footer-social">
+        <h3>Follow Us</h3>
+        <a href="#"><img src="image/linkedin.png" alt="LinkedIn"></a>
+        <a href="#"><img src="image/twitter.png" alt="Twitter"></a>
+        <a href="#"><img src="image/instagram.png" alt="Instagram"></a>
+        <a href="#"><img src="image/youtube.png" alt="YouTube"></a>
+      </div>
+    </div>
+    <p class="footer-copy">&copy; 2025 Agridirect. All Rights Reserved.</p>
   </footer>
 
+  <script>
+    async function loadProducts() {
+      try {
+        const res = await fetch("http://localhost:5000/products");
+        const data = await res.json();
+
+        if (data.status === "success") {
+          const productGrid = document.getElementById("productGrid");
+          productGrid.innerHTML = "";
+
+          data.products.forEach(p => {
+            const card = document.createElement("div");
+            card.className = "product-card";
+
+            card.innerHTML = `
+              <img src="http://localhost:5000${p.image}" alt="${p.name}">
+              <div class="product-info">
+                <h5>${p.name}</h5>
+                <p><strong>Category:</strong> ${p.category}</p>
+                <p><strong>Farmer:</strong> ${p.farmerId?.name || "Unknown"}</p>
+                <p><strong>Location:</strong> ${p.location}</p>
+                <p><strong>Quantity:</strong> ${p.quantity}</p>
+                <p class="price"><strong>Price:</strong> ₹${p.price}</p>
+                <button class="btn-buy">🛒 Buy Now</button>
+              </div>
+            `;
+            productGrid.appendChild(card);
+          });
+        } else {
+          alert("Error loading products");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Failed to fetch products from server");
+      }
+    }
+
+    loadProducts();
+  </script>
 </body>
 </html>

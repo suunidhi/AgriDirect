@@ -1,35 +1,43 @@
-const express = require('express');
-const path = require('path');
-const bodyParser = require('body-parser');
+// app.js
+import express from 'express';
+import path from 'path';
+import bodyParser from 'body-parser';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+// Fix __dirname for ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 const port = 3000;
 
-// Dummy user (you can connect MongoDB later)
-const dummyUser = {
-  email: 'user@example.com',
-  password: 'password123'
-};
-
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json()); // for JSON requests
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Routes
+// Routes - serve the signup/login HTML files
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'login187.html'));
+  res.sendFile(path.join(__dirname, 'public', 'shared_homepage.html')); 
 });
 
-app.post('/login', (req, res) => {
-  const { email, password } = req.body;
+app.get('/farmer/signup', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'farmer_signup18.html'));
+});
 
-  if (email === dummyUser.email && password === dummyUser.password) {
-    return res.send(`<h2>Login successful! Welcome, ${email} 🎉</h2>`);
-  } else {
-    return res.send('<h2>Invalid email or password. Please try again.</h2><a href="/">Go Back</a>');
-  }
+app.get('/farmer/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'farmer_login19.html'));
+});
+
+app.get('/consumer/signup', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'consumer_signup18.html'));
+});
+
+app.get('/consumer/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'consumer_login18.html'));
 });
 
 app.listen(port, () => {
-  console.log(`🚀 Server is running at http://localhost:${port}`);
+  console.log(`🌐 Frontend server is running at http://localhost:${port}`);
 });

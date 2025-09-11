@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Select Role</title>
+    <title>Select what you want</title>
     <style>
         * {
             box-sizing: border-box;
@@ -82,7 +82,11 @@
             align-items: center;
             text-align: center;
             width: 100%;
+            transition: transform 0.3s ease, background 0.3s ease;
         }
+        .wrapper :hover {
+        transform: scale(1.1);
+    }
 
         .container {
             display: flex;
@@ -191,13 +195,13 @@
             <li><a href="shared_homepage.html">HOME</a></li>
             <li><a href="marketplace.html">MARKETPLACE</a></li>
             <li><a href="qr-scan.html">SCAN QR CODE</a></li>
-            <li><a href="about.html">ABOUT US</a></li>
-            <li><a href="login187.html">LOGIN/SIGN UP</a></li>
+            <li><a href="about_us.html">ABOUT US</a></li>
+            <li><a href="role.html">LOGIN/SIGN UP</a></li>
         </ul>
     </nav>
 
     <div class="wrapper">
-        <h1 class="line">What Is Your choice !!</h1>
+        <h1 class="line" style="color: #2e7d32;">What Is Your choice !!</h1>
         <div class="container">
             <div class="option" onclick="redirectTo('our_moto.html')">our moto</div>
             <div class="option" onclick="redirectTo('our_team.html')">our team</div>

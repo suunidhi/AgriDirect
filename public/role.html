@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AgriDirect | Choose Role</title>
+  <style>
+    /* General Styles */
+    body {
+      font-family: Arial, sans-serif;
+      background:#f6fff6;
+      text-align:center;
+      margin:0;
+      padding-bottom: 180px; /* space for fixed footer */
+    }
+
+    /* Navbar */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background:#5D8736;
+      padding: 15px 30px;
+      font-size: larger;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+    }
+    .logo video {
+      width: 50px;
+      height: 50px;
+      margin-right: 10px;
+      border-radius: 5px;
+    }
+    .logo-text {
+      font-size: 24px;
+      font-weight: bold;
+      color:#ffffff;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+    }
+    nav ul li {
+      margin: 0 15px;
+      padding: 7px;
+    }
+    nav ul li a {
+      text-decoration: none;
+      color: #ffffff;
+      font-weight: bold;
+    }
+    nav ul li a:hover {
+      color:#F4FFC3;
+    }
+
+    /* Role choice buttons */
+    .choice {
+        display: flex;
+        justify-content: center;
+        gap: 20px; /* space between buttons */
+        margin-top: 0; /* minimal gap from heading */
+    }
+
+    button {
+        background:#2e7d32;
+        color:white;
+        border:none;
+        padding:15px 25px;
+        border-radius:12px;
+        font-size:1.5rem;
+        cursor:pointer;
+        transition: transform 0.3s ease, background 0.3s ease;
+    }
+    button:hover {
+        background:#1b5e20;
+        transform: scale(1.1);
+    }
+
+    /* Footer */
+    footer {
+      background:white;
+      color:#809D3C;
+      padding: 30px 20px;
+      text-align: center;
+      border-top: 2px solid #5D8736;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+    .footer-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      font-size: 22px;
+      font-weight: bold;
+    }
+    .footer-logo video {
+      width: 50px;
+      height: 50px;
+      margin-right: 10px;
+      border-radius: 5px;
+    }
+    .footer-contact, .footer-social {
+      text-align: left;
+    }
+    .footer-social a img {
+      width: 30px;
+      margin: 0 10px;
+      transition: transform 0.3s ease-in-out;
+    }
+    .footer-social a img:hover {
+      transform: scale(1.2);
+    }
+    .footer-copy {
+      margin-top: 15px;
+      font-size: 14px;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header>
+    <nav>
+      <div class="logo">
+        <video autoplay loop muted>
+          <source src="image/agridirect.mp4" type="video/mp4">
+        </video>
+        <span class="logo-text">AgriDirect</span>
+      </div>
+      <ul>
+        <li><a href="shared_homepage.html">HOME</a></li>
+        <li><a href="Marketplace.html">MARKETPLACE</a></li>
+        <li><a href="qr-scan.html">SCAN QR CODE</a></li>
+        <li><a href="about_us.html">ABOUT US</a></li>
+        <li><a href="role.html">LOGIN/SIGN UP</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Role selection section -->
+  <h1 style="margin-top: 50px; margin-bottom: 20px; color:#2e7d32">Choose The Role!!!</h1>
+  <div class="choice">
+    <button onclick="location.href='farmer_signup18.html'">Farmer 👩‍🌾</button>
+    <button onclick="location.href='consumer_signup18.html'">Consumer 🛒</button>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-container">
+      <div class="footer-logo">
+        <video autoplay loop muted playsinline>
+          <source src="image/logo.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+        <span>AgriDirect</span>
+      </div>
+
+      <div class="footer-contact">
+        <h3>Contact Us</h3>
+        <p>Email: support@agriDirect.com</p>
+        <p>Phone: +91 10101 01010</p>
+      </div>
+
+      <div class="footer-social">
+        <h3>Follow Us</h3>
+        <a href="#"><img src="image/linkedin.png" alt="LinkedIn"></a>
+        <a href="#"><img src="image/twitter.png" alt="Twitter"></a>
+        <a href="#"><img src="image/instagram.png" alt="Instagram"></a>
+        <a href="#"><img src="image/youtube.png" alt="YouTube"></a>
+      </div>
+    </div>
+    <p class="footer-copy">&copy; 2025 Agridirect. All Rights Reserved.</p>
+  </footer>
+
+</body>
+</html>
