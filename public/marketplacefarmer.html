@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -11,6 +11,7 @@
       background-color: #f5f7f5;
       margin: 0;
       padding: 0;
+      padding-bottom: 0; /* no need anymore */
     }
 
     /* Navbar */
@@ -23,37 +24,44 @@
       padding: 15px 30px;
       font-size: larger;
     }
+
     .logo {
       display: flex;
       align-items: center;
     }
+
     .logo video {
       width: 50px;
       height: 50px;
       margin-right: 10px;
       border-radius: 5px;
     }
+
     .logo-text {
       font-size: 24px;
       font-weight: bold;
       color: #ffffff;
     }
+
     nav ul {
       list-style: none;
       display: flex;
       margin: 0;
       padding: 0;
     }
+
     nav ul li {
       margin: 0 15px;
       padding: 7px;
       position: relative; 
     }
+
     nav ul li a {
       text-decoration: none;
       color: #ffffff;
       font-weight: bold;
     }
+
     nav ul li a:hover {
       color: #F4FFC3;
     }
@@ -66,13 +74,14 @@
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.12);
     }
+
     h2 {
       text-align: center;
       color: #2e7d32;
       margin-bottom: 25px;
     }
 
-    /* Product Grid */
+    /* Product Grid Fix */
     .row {
       display: flex;
       flex-wrap: wrap;
@@ -86,16 +95,19 @@
       border: 1px solid #ccc;
       border-radius: 10px;
       padding: 15px;
+      text-align: center;
+      transition: box-shadow 0.3s ease;
       background: #fff;
-      flex: 1;
+      flex: 1; /* make equal height */
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      position: relative;
     }
+
     .product-card:hover {
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
+
     .product-card img {
       max-width: 150px;
       border-radius: 10px;
@@ -104,39 +116,19 @@
       object-fit: cover;
     }
 
-    /* Three dot menu */
-    .menu-dots {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      cursor: pointer;
-      font-size: 20px;
-      font-weight: bold;
-      color: #333;
-    }
-    .menu-options {
-      display: none;
-      position: absolute;
-      top: 35px;
-      right: 10px;
-      background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-      z-index: 100;
-    }
-    .menu-options button {
-      display: block;
-      width: 100%;
-      background: none;
+    .product-card button {
+      margin-top: 10px;
+      background: #5D8736;
+      color: #fff;
       border: none;
-      padding: 8px 15px;
-      text-align: left;
+      padding: 8px 14px;
+      border-radius: 6px;
       cursor: pointer;
-      font-size: 14px;
+      font-weight: bold;
     }
-    .menu-options button:hover {
-      background: #f5f5f5;
+
+    .product-card button:hover {
+      background: #4a6b2b;
     }
 
     #addProductBtn {
@@ -151,6 +143,7 @@
       cursor: pointer;
       font-weight: bold;
     }
+
     #addProductBtn:hover {
       background: #4a6b2b;
     }
@@ -162,7 +155,7 @@
       padding: 30px 20px;
       text-align: center;
       border-top: 2px solid #5D8736;
-      position: relative;
+      position: relative;  /* instead of fixed */
       bottom: 0;
       width: 100%;
       z-index: 100;
@@ -226,6 +219,7 @@
   <div class="container">
     <h2>🛒 My Products</h2>
     <button id="addProductBtn">➕ Add New Product</button>
+
     <div id="productsContainer" class="row"></div>
   </div>
 
@@ -235,14 +229,17 @@
       <div class="footer-logo">
         <video autoplay loop muted playsinline>
           <source src="image/logo.mp4" type="video/mp4">
+          Your browser does not support the video tag.
         </video>
         <span>AgriDirect</span>
       </div>
+
       <div class="footer-contact">
         <h3>Contact Us</h3>
         <p>Email: support@agriDirect.com</p>
         <p>Phone: +91 10101 01010</p>
       </div>
+
       <div class="footer-social">
         <h3>Follow Us</h3>
         <a href="#"><img src="image/linkedin.png" alt="LinkedIn"></a>
@@ -266,6 +263,7 @@
         return;
       }
 
+      // Redirect to add product page dynamically
       addProductBtn.addEventListener("click", () => {
         window.location.href = `farmeraddproduct.html`;
       });
@@ -286,11 +284,6 @@
 
             card.innerHTML = `
               <div class="product-card">
-                <div class="menu-dots">⋮</div>
-                <div class="menu-options">
-                  <button onclick="editProduct('${product._id}')">✏️ Edit</button>
-                  <button onclick="deleteProduct('${product._id}')">🗑️ Delete</button>
-                </div>
                 <img src="${product.image ? (product.image.startsWith('http') ? product.image : 'http://localhost:5000' + product.image) : 'image/placeholder.png'}" alt="${product.name}">
                 <h5>${product.name}</h5>
                 <p>Category: ${product.category}</p>
@@ -301,16 +294,6 @@
             `;
 
             productsContainer.appendChild(card);
-
-            // Toggle menu
-            const dots = card.querySelector(".menu-dots");
-            const menu = card.querySelector(".menu-options");
-            dots.addEventListener("click", (e) => {
-              e.stopPropagation();
-              menu.style.display = menu.style.display === "block" ? "none" : "block";
-            });
-
-            document.addEventListener("click", () => menu.style.display = "none");
           });
 
         } else {
@@ -321,33 +304,6 @@
         productsContainer.innerHTML = "<p style='text-align:center; color:red;'>Error connecting to server.</p>";
       }
     });
-
-    // Edit product
-    function editProduct(productId) {
-      window.location.href = `farmeraddproduct.html?productId=${encodeURIComponent(productId)}`;
-    }
-
-    // Delete product
-    async function deleteProduct(productId) {
-      if (!confirm("Are you sure you want to delete this product?")) return;
-
-      try {
-        const response = await fetch(`http://localhost:5000/farmer/deleteProduct/${productId}`, {
-          method: "DELETE"
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-          alert("Product deleted successfully");
-          location.reload();
-        } else {
-          alert("Failed to delete product: " + (data.message || data.error));
-        }
-      } catch (err) {
-        console.error(err);
-        alert("Error deleting product");
-      }
-    }
   </script>
 </body>
 </html>
