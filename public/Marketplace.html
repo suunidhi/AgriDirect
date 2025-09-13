@@ -15,7 +15,7 @@
       background: #f8f9fa;
     }
     main {
-      flex: 1; /* pushes footer down */
+      flex: 1;
     }
     h1 {
       text-align: center;
@@ -28,24 +28,53 @@
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 20px;
     }
+
+    /* Flip card */
+    .card-container {
+      perspective: 1000px;
+    }
     .product-card {
-      background: #fff;
+      width: 100%;
+      height: 480px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.8s;
       border-radius: 12px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      transition: transform 0.2s;
+      background: #fff;
+    }
+    .product-card.is-flipped {
+      transform: rotateY(180deg);
+    }
+    .card-side {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      backface-visibility: hidden;
+      border-radius: 12px;
+      background: #fff;
       padding: 15px;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
     }
-    .product-card:hover {
-      transform: translateY(-5px);
-    }
-    .product-card img {
+    .card-front img {
       width: 100%;
       height: 220px;
       object-fit: cover;
       border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    .card-back {
+      transform: rotateY(180deg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      text-align: center;
     }
     .product-info {
-      margin-top: 10px;
+      flex: 1;
     }
     .product-info h5 {
       font-size: 18px;
@@ -61,11 +90,11 @@
       font-size: 18px;
       color: #d00000;
       font-weight: bold;
-      margin-top: 5px;
+      margin: 5px 0;
     }
     .btn-buy {
-      margin-top: 10px;
-      width: 100%;
+      margin-top: auto;
+      width: 48%;
       background: #2d6a4f;
       color: white;
       border-radius: 8px;
@@ -76,6 +105,31 @@
     }
     .btn-buy:hover {
       background: #1b4332;
+    }
+    .btn-sqr {
+      margin-top: auto;
+      width: 48%;
+      background: #e2c106;
+      color: #fff;
+      border-radius: 8px;
+      border: none;
+      padding: 10px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .btn-sqr:hover {
+      background: #ec8404;
+    }
+    .btn-group {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+    .qr {
+      margin-top: 15px;
+      width: 150px;
+      height: 150px;
     }
 
     /* Navbar */
@@ -201,7 +255,6 @@
       <div class="footer-logo">
         <video autoplay loop muted playsinline>
           <source src="image/logo.mp4" type="video/mp4">
-          Your browser does not support the video tag.
         </video>
         <span>AgriDirect</span>
       </div>
@@ -223,6 +276,8 @@
     <p class="footer-copy">&copy; 2025 Agridirect. All Rights Reserved.</p>
   </footer>
 
+  <!-- QRCode.js library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script>
   async function loadProducts() {
     try {
@@ -234,25 +289,46 @@
         productGrid.innerHTML = "";
 
         data.products.forEach(p => {
-          const card = document.createElement("div");
-          card.className = "product-card";
+          const wrapper = document.createElement("div");
+          wrapper.className = "card-container";
 
-          card.innerHTML = `
-            <img src="http://localhost:5000${p.image}" alt="${p.name}">
-            <div class="product-info">
-              <h5>${p.name}</h5>
-              <p><strong>Category:</strong> ${p.category}</p>
-              <p><strong>Farmer:</strong> ${p.farmerId?.name || "Unknown"}</p>
-              <p><strong>Location:</strong> ${p.location}</p>
-              <p><strong>Quantity:</strong> ${p.quantity}</p>
-              <p class="price"><strong>Price:</strong> ₹${p.price}</p>
-              <button class="btn-buy" 
-                onclick="redirectToCheckout('${p._id}', '${p.farmerId?._id}', '${p.name}', ${p.price})">
-                🛒 Buy Now
-              </button>
+          wrapper.innerHTML = `
+            <div class="product-card">
+              <div class="card-side card-front">
+                <img src="http://localhost:5000${p.image}" alt="${p.name}">
+                <div class="product-info">
+                  <h5>${p.name}</h5>
+                  <p><strong>Category:</strong> ${p.category}</p>
+                  <p><strong>Farmer:</strong> ${p.farmerId?.name || "Unknown"}</p>
+                  <p><strong>Location:</strong> ${p.location}</p>
+                  <p><strong>Quantity:</strong> ${p.quantity}</p>
+                  <p class="price"><strong>Price:</strong> ₹${p.price}</p>
+                  <div class="btn-group">
+                    <button class="btn-buy"
+                      onclick="event.stopPropagation(); redirectToCheckout('${p._id}', '${p.farmerId?._id}', '${p.name}', ${p.price})">
+                      🛒 Buy Now
+                    </button>
+                    <button class="btn-sqr"
+                      onclick="event.stopPropagation(); showQR(this, '${p.farmerId?.name || "Unknown"}', '${p.location}', '${p.name}')">
+                      Verify Farmer
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="card-side card-back">
+                <h3>Scan QR</h3>
+                <div class="qr"></div>
+              </div>
             </div>
           `;
-          productGrid.appendChild(card);
+          productGrid.appendChild(wrapper);
+
+          // Add flip on card click
+          wrapper.querySelector(".product-card").addEventListener("click", function(e) {
+            if (!e.target.closest("button")) {
+              this.classList.toggle("is-flipped");
+            }
+          });
         });
       } else {
         alert("Error loading products");
@@ -265,16 +341,26 @@
 
   loadProducts();
 
- function redirectToCheckout(productId, farmerId, name, price) {
-  // Save product info in localStorage (optional but useful)
-  localStorage.setItem("checkoutProduct", JSON.stringify({ productId, farmerId, name, price }));
+  function redirectToCheckout(productId, farmerId, name, price) {
+    localStorage.setItem("checkoutProduct", JSON.stringify({ productId, farmerId, name, price }));
+    const consumerId = localStorage.getItem("consumerId");
+    window.location.href = `consumer_signup18.html?productId=${encodeURIComponent(productId)}&farmerId=${encodeURIComponent(farmerId)}&name=${encodeURIComponent(name)}&price=${encodeURIComponent(price)}&consumerId=${encodeURIComponent(consumerId)}`;
+  }
 
-  const consumerId = localStorage.getItem("consumerId");
+  function showQR(button, farmerName, farmerLocation, productName) {
+    let card = button.closest(".product-card");
+    card.classList.add("is-flipped");
 
-  // Redirect with product details in the URL
-  window.location.href = `consumer_signup18.html?productId=${encodeURIComponent(productId)}&farmerId=${encodeURIComponent(farmerId)}&name=${encodeURIComponent(name)}&price=${encodeURIComponent(price)}&consumerId=${encodeURIComponent(consumerId)}`;
-}
-
+    setTimeout(() => {
+      let qrContainer = card.querySelector(".qr");
+      qrContainer.innerHTML = "";
+      new QRCode(qrContainer, {
+        text: `Farmer: ${farmerName}\nLocation: ${farmerLocation}\nProduct: ${productName}`,
+        width: 150,
+        height: 150
+      });
+    }, 300);
+  }
   </script>
 </body>
 </html>
