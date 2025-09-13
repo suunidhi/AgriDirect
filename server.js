@@ -51,6 +51,24 @@ const productSchema = new mongoose.Schema({
 });
 const Product = mongoose.model("Product", productSchema);
 
+// ✅ Order Schema (linked to product + farmer + consumer)
+const orderSchema = new mongoose.Schema({
+  productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
+  farmerId: { type: mongoose.Schema.Types.ObjectId, ref: "Farmer" },
+  consumerId: { type: mongoose.Schema.Types.ObjectId, ref: "Consumer" },
+  consumerName: String,
+  consumerEmail: String,
+  consumerMobile: String,
+  productName: String,
+  unitPrice: Number,
+  quantity: Number,
+  totalPrice: Number,
+  address: String,
+  paymentMethod: String,
+  date: { type: Date, default: Date.now }
+});
+const Order = mongoose.model("Order", orderSchema);
+
 // ------------------ MULTER ------------------
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/"),
@@ -117,13 +135,12 @@ app.post("/farmer/upload/:id", upload.single("photo"), (req, res) => {
   res.json({ status: "success", message: "File uploaded!", filePath: `/uploads/${req.file.filename}` });
 });
 
-// ✅ Add Product (fixed)
+// ✅ Add Product
 app.post("/farmer/addProduct/:farmerId", upload.single("image"), async (req, res) => {
   try {
     const { farmerId } = req.params;
     const { name, category, price, quantity, location } = req.body;
 
-    // ✅ Validate Farmer ID
     if (!mongoose.Types.ObjectId.isValid(farmerId)) {
       return res.json({ status: "error", message: "Invalid Farmer ID" });
     }
@@ -131,10 +148,8 @@ app.post("/farmer/addProduct/:farmerId", upload.single("image"), async (req, res
     const farmer = await Farmer.findById(farmerId);
     if (!farmer) return res.json({ status: "error", message: "Farmer not found" });
 
-    // ✅ Check if image exists
     if (!req.file) return res.json({ status: "error", message: "Product image is required!" });
 
-    // ✅ Convert price & quantity to numbers
     const numericPrice = parseFloat(price);
     const numericQuantity = parseFloat(quantity);
 
@@ -142,7 +157,6 @@ app.post("/farmer/addProduct/:farmerId", upload.single("image"), async (req, res
       return res.json({ status: "error", message: "Price and Quantity must be numbers" });
     }
 
-    // ✅ Create new product
     const product = new Product({
       farmerId,
       name,
@@ -163,39 +177,73 @@ app.post("/farmer/addProduct/:farmerId", upload.single("image"), async (req, res
 });
 
 // ------------------ CONSUMER ROUTES ------------------
+
+// ✅ Consumer Register (fixed)
 app.post("/consumer/register", async (req, res) => {
   try {
     const { name, email, mobile, password } = req.body;
 
     const existing = await Consumer.findOne({ email });
-    if (existing) return res.json({ status: "error", message: "Email already registered" });
+    if (existing) {
+      return res.json({ success: false, message: "Email already registered" });
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const consumer = new Consumer({ name, email, mobile, password: hashedPassword });
     await consumer.save();
 
-    res.json({ status: "success", message: "Consumer registered successfully" });
+    res.json({
+      success: true,
+      message: "Consumer registered successfully",
+      consumer: {
+        _id: consumer._id.toString(),
+        name: consumer.name,
+        email: consumer.email,
+        mobile: consumer.mobile
+      }
+    });
   } catch (error) {
     console.error(error);
-    res.json({ status: "error", message: "Error registering consumer" });
+    res.status(500).json({ success: false, message: "Error registering consumer" });
   }
 });
 
+// ✅ Check email exists
+app.post("/consumer/check-email", async (req, res) => {
+  try {
+    const { email } = req.body;
+    const consumer = await Consumer.findOne({ email });
+    res.json({ exists: !!consumer });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ exists: false, message: "Server error" });
+  }
+});
+
+// ✅ Consumer Login (consistent with success:true/false)
 app.post("/consumer/login", async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
     const consumer = await Consumer.findOne({ name, email });
-    if (!consumer) return res.json({ status: "error", message: "Invalid name, email, or password" });
+    if (!consumer) return res.json({ success: false, message: "Invalid name, email, or password" });
 
     const isMatch = await bcrypt.compare(password, consumer.password);
-    if (!isMatch) return res.json({ status: "error", message: "Invalid name, email, or password" });
+    if (!isMatch) return res.json({ success: false, message: "Invalid name, email, or password" });
 
-    res.json({ status: "success", message: "Login successful" });
+    res.json({
+      success: true,
+      message: "Login successful",
+      consumer: {
+        _id: consumer._id.toString(),
+        name: consumer.name,
+        email: consumer.email,
+      },
+    });
   } catch (error) {
     console.error(error);
-    res.json({ status: "error", message: "Server error" });
+    res.json({ success: false, message: "Server error" });
   }
 });
 
@@ -219,7 +267,8 @@ app.get("/farmer/getProducts/:farmerId", async (req, res) => {
     res.json({ status: "error", message: "Error fetching products" });
   }
 });
-// Get all products (with farmer details)
+
+// ✅ Get all products (with farmer details)
 app.get("/products", async (req, res) => {
   try {
     const products = await Product.find().populate("farmerId", "name location");
@@ -229,34 +278,23 @@ app.get("/products", async (req, res) => {
     res.json({ status: "error", message: "Error fetching all products" });
   }
 });
-// Update product
+
+// ✅ Update product
 app.put("/farmer/updateProduct/:id", upload.single("image"), async (req, res) => {
   try {
     const { name, category, price, quantity, location } = req.body;
     const productId = req.params.id;
 
-    // Validate price and quantity
     const numericPrice = parseFloat(price);
     const numericQuantity = parseFloat(quantity);
     if (isNaN(numericPrice) || isNaN(numericQuantity)) {
       return res.json({ status: "error", message: "Price and Quantity must be numbers" });
     }
 
-    // Prepare update object
-    const updateData = {
-      name,
-      category,
-      price: numericPrice,
-      quantity: numericQuantity,
-      location,
-    };
-
-    if (req.file) {
-      updateData.image = "/uploads/" + req.file.filename;
-    }
+    const updateData = { name, category, price: numericPrice, quantity: numericQuantity, location };
+    if (req.file) updateData.image = "/uploads/" + req.file.filename;
 
     const updatedProduct = await Product.findByIdAndUpdate(productId, updateData, { new: true });
-
     if (!updatedProduct) {
       return res.json({ status: "error", message: "Product not found" });
     }
@@ -272,8 +310,7 @@ app.put("/farmer/updateProduct/:id", upload.single("image"), async (req, res) =>
   }
 });
 
-
-// Delete product
+// ✅ Delete product
 app.delete("/farmer/deleteProduct/:id", async (req, res) => {
   try {
     await Product.findByIdAndDelete(req.params.id);
@@ -283,7 +320,91 @@ app.delete("/farmer/deleteProduct/:id", async (req, res) => {
   }
 });
 
+// ------------------ ORDER ROUTES ------------------
+// ✅ Place Order (fetch consumer details automatically)
+app.post("/orders", async (req, res) => {
+  try {
+    console.log("📦 Incoming Order Request:", req.body);
 
+    const {
+      productId,
+      farmerId,
+      consumerId,
+      productName,
+      unitPrice,
+      quantity,
+      totalPrice,
+      address,
+      paymentMethod
+    } = req.body;
+
+    const consumer = await Consumer.findById(consumerId);
+    if (!consumer) {
+      console.log("❌ Invalid Consumer ID:", consumerId);
+      return res.status(400).json({ success: false, message: "Invalid Consumer ID" });
+    }
+
+    const order = new Order({
+      productId,
+      farmerId,
+      consumerId,
+      consumerName: consumer.name,
+      consumerEmail: consumer.email,
+      consumerMobile: consumer.mobile,
+      productName,
+      unitPrice,
+      quantity,
+      totalPrice,
+      address,
+      paymentMethod,
+    });
+
+    await order.save();
+    console.log("✅ Order saved successfully:", order);
+
+    res.json({ success: true, message: "Order placed successfully!" });
+  } catch (err) {
+    console.error("❌ Order Error:", err.message, err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// ✅ Get orders by consumerId (support query param and param)
+app.get("/orders", async (req, res) => {
+  try {
+    const consumerId = req.query.consumerId;
+    if (!consumerId) {
+      return res.status(400).json({ success: false, message: "consumerId is required" });
+    }
+
+    const orders = await Order.find({ consumerId });
+    res.json({ success: true, orders });
+  } catch (err) {
+    console.error("Get Orders Error:", err);
+    res.status(500).json({ success: false, message: "Error fetching orders" });
+  }
+});
+
+
+// ✅ Get orders by farmerId
+app.get("/farmer/orders/:farmerId", async (req, res) => {
+  try {
+    const { farmerId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(farmerId)) {
+      return res.json({ success: false, message: "Invalid Farmer ID" });
+    }
+
+    const orders = await Order.find({ farmerId })
+      .populate("consumerId", "name email mobile")
+      .populate("productId", "name price");
+
+    res.json({ success: true, orders });
+  } catch (err) {
+    console.error("Get Farmer Orders Error:", err);
+    res.status(500).json({ success: false, message: "Error fetching farmer orders" });
+  }
+});
 
 // ------------------ START SERVER ------------------
 app.listen(5000, () => console.log("🚀 Server running on http://localhost:5000"));

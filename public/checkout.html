@@ -1,0 +1,244 @@
+cehckout.html:-<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Checkout - AgriDirect</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      background: #f6fff6; 
+      margin: 0; 
+      padding: 0;
+    }
+    .checkout-container {
+      max-width: 600px; 
+      margin: 120px auto 0 auto; 
+      background: #fff; 
+      padding: 25px;
+      border-radius: 12px; 
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h2 { text-align: center; color: #2c662d; margin-bottom: 20px; }
+    label { display: block; margin-top: 10px; font-weight: bold; }
+    input, select, textarea {
+      width: 100%; padding: 10px; margin-top: 5px;
+      border: 1px solid #ccc; border-radius: 8px;
+    }
+    .price-box { margin-top: 10px; font-weight: bold; color: #28a745; }
+    .pay-btn {
+      background: #28a745; color: white; border: none;
+      padding: 12px; width: 100%; font-size: 16px;
+      border-radius: 8px; cursor: pointer; margin-top: 20px;
+    }
+    .pay-btn:hover { background: #218838; }
+    .payment-details { margin-top: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; display: none; }
+
+    /* Navbar */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background:#5D8736;
+      padding: 15px 30px;
+      font-size: larger;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+    .logo { display: flex; align-items: center; }
+    .logo video { width: 50px; height: 50px; margin-right: 10px; border-radius: 5px; }
+    .logo-text { font-size: 24px; font-weight: bold; color:#ffffff; }
+    nav ul { list-style: none; display: flex; margin: 0; padding: 0; }
+    nav ul li { margin: 0 15px; padding: 7px; }
+    nav ul li a { text-decoration: none; color: #ffffff; font-weight: bold; }
+    nav ul li a:hover { color:#F4FFC3; }
+
+    /* Footer */
+    footer {
+      background:white;
+      color:#809D3C;
+      padding: 30px 20px;
+      text-align: center;
+      border-top: 2px solid #5D8736;
+    }
+    .footer-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .footer-logo { display: flex; align-items: center; font-size: 22px; font-weight: bold; }
+    .footer-logo video { width: 50px; height: 50px; margin-right: 10px; border-radius: 5px; }
+    .footer-contact, .footer-social { text-align: left; }
+    .footer-social a img { width: 30px; margin: 0 10px; transition: transform 0.3s ease-in-out; }
+    .footer-social a img:hover { transform: scale(1.2); }
+    .footer-copy { margin-top: 15px; font-size: 14px; opacity: 0.8; }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header>
+    <nav>
+      <div class="logo">
+        <video autoplay loop muted>
+          <source src="image/agridirect.mp4" type="video/mp4">
+        </video>
+        <span class="logo-text">AgriDirect</span>
+      </div>
+      <ul>
+        <li><a href="shared_homepage.html">HOME</a></li>
+        <li><a href="Marketplace.html">MARKETPLACE</a></li>
+        <li><a href="qr-scan.html">SCAN QR CODE</a></li>
+        <li><a href="about_us.html">ABOUT US</a></li>
+        <li><a href="role.html">LOGIN/SIGN UP</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Checkout Form -->
+  <div class="checkout-container">
+    <h2>Checkout</h2>
+    <form id="checkoutForm">
+      <label>Product Name:</label>
+      <input type="text" id="productName" name="productName" readonly>
+
+      <label>Price (per unit):</label>
+      <input type="number" id="unitPrice" name="unitPrice" readonly>
+
+      <label>Quantity:</label>
+      <input type="number" id="quantity" name="quantity" min="1" value="1" required>
+
+      <div class="price-box">Total Price: ₹<span id="totalPrice">0</span></div>
+
+      <label>Delivery Address:</label>
+      <textarea id="address" name="address" rows="3" required></textarea>
+
+      <label>Payment Method:</label>
+      <select id="paymentMethod" name="paymentMethod" required>
+        <option value="">-- Select Payment Method --</option>
+        <option value="gpay">Google Pay</option>
+        <option value="paytm">Paytm</option>
+        <option value="upi">UPI</option>
+        <option value="cod">Cash on Delivery</option>
+      </select>
+
+      <!-- Payment Details Section -->
+      <div class="payment-details" id="paymentDetails"></div>
+
+      <button type="submit" class="pay-btn">Place Order</button>
+    </form>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-container">
+      <div class="footer-logo">
+        <video autoplay loop muted playsinline>
+          <source src="image/logo.mp4" type="video/mp4">
+        </video>
+        <span>AgriDirect</span>
+      </div>
+
+      <div class="footer-contact">
+        <h3>Contact Us</h3>
+        <p>Email: support@agriDirect.com</p>
+        <p>Phone: +91 10101 01010</p>
+      </div>
+
+      <div class="footer-social">
+        <h3>Follow Us</h3>
+        <a href="#"><img src="image/linkedin.png" alt="LinkedIn"></a>
+        <a href="#"><img src="image/twitter.png" alt="Twitter"></a>
+        <a href="#"><img src="image/instagram.png" alt="Instagram"></a>
+        <a href="#"><img src="image/youtube.png" alt="YouTube"></a>
+      </div>
+    </div>
+    <p class="footer-copy">&copy; 2025 Agridirect. All Rights Reserved.</p>
+  </footer>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const productName = params.get("name") ? decodeURIComponent(params.get("name")) : "Unknown Product"; // ✅ FIXED
+    const price = params.get("price") ? parseFloat(params.get("price")) : 0;
+    const productId = params.get("productId") || ""; 
+    const consumerId = localStorage.getItem("consumerId"); 
+    const consumerName = localStorage.getItem("consumerName"); 
+    const consumerEmail = localStorage.getItem("consumerEmail"); 
+    const farmerId = params.get("farmerId"); 
+
+    document.getElementById("productName").value = productName;
+    document.getElementById("unitPrice").value = price;
+    document.getElementById("totalPrice").innerText = price;
+
+    const quantityInput = document.getElementById("quantity");
+    const totalPriceSpan = document.getElementById("totalPrice");
+
+    quantityInput.addEventListener("input", () => {
+      const qty = parseInt(quantityInput.value) || 1;
+      totalPriceSpan.innerText = (price || 0) * qty;
+    });
+
+    const paymentMethod = document.getElementById("paymentMethod");
+    const paymentDetails = document.getElementById("paymentDetails");
+
+    paymentMethod.addEventListener("change", () => {
+      let method = paymentMethod.value;
+      paymentDetails.style.display = "block";
+      if (method === "gpay") {
+        paymentDetails.innerHTML = "<p>Pay using Google Pay: <b>gpay-123@upi</b></p>";
+      } else if (method === "paytm") {
+        paymentDetails.innerHTML = "<p>Pay using Paytm: <b>paytm-987@upi</b></p>";
+      } else if (method === "upi") {
+        paymentDetails.innerHTML = "<p>Pay using UPI ID: <b>farmerupi@okicici</b></p>";
+      } else if (method === "cod") {
+        paymentDetails.innerHTML = "<p><b>Cash on Delivery</b> selected. Pay at delivery.</p>";
+      }
+    });
+
+    document.getElementById("checkoutForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!consumerId) {
+        alert("⚠️ Please login as consumer first!");
+        window.location.href = "consumer_login18.html";
+        return;
+      }
+
+      const order = {
+        productId,
+        productName,
+        unitPrice: price,
+        quantity: parseInt(quantityInput.value),
+        totalPrice: parseInt(quantityInput.value) * price,
+        address: document.getElementById("address").value,
+        paymentMethod: paymentMethod.value,
+        consumerId,
+        consumerName,   
+        consumerEmail,  
+        farmerId
+      };
+
+      try {
+        const res = await fetch("http://localhost:5000/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(order)
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert("✅ Order placed successfully!");
+          window.location.href = "marketplace.html";
+        } else {
+          alert("❌ Error placing order. Try again.");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("⚠️ Server error. Make sure backend is running.");
+      }
+    });
+  </script>
+</body>
+</html> 

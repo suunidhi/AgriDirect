@@ -5,10 +5,7 @@
   <title>AgriDirect | Consumer Registration</title>
   <style>
     body {font-family: Arial, sans-serif; background:#f6fff6; margin:0;}
-    nav {
-      display:flex; justify-content:space-between; align-items:center;
-      background:#5D8736; padding:15px 30px; font-size: larger;
-    }
+    nav {display:flex; justify-content:space-between; align-items:center; background:#5D8736; padding:15px 30px; font-size: larger;}
     .logo {display:flex; align-items:center;}
     .logo video {width:50px;height:50px;margin-right:10px;border-radius:5px;}
     .logo-text {font-size:24px;font-weight:bold;color:#fff;}
@@ -17,47 +14,22 @@
     nav ul li a {text-decoration:none; color:#fff; font-weight:bold;}
     nav ul li a:hover {color:#F4FFC3;}
 
-    .form-container {
-      width:400px; margin:40px auto; background:white; padding:20px; border-radius:12px;
-      box-shadow:0 4px 12px rgba(0,0,0,0.1);
-      transition: transform 0.3s ease, background 0.3s ease;
-      position: relative;
-    }
-    .form-container:hover {
-      transform: scale(1.1);
-    }
+    .form-container {width:400px; margin:40px auto; background:white; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1); transition: transform 0.3s ease, background 0.3s ease; position: relative;}
+    .form-container:hover { transform: scale(1.1); }
     h2 {text-align:center; color:#2e7d32;}
     label {display:block; margin-top:10px; font-weight:bold;}
     input {width:100%; padding:10px; margin-top:5px; border:1px solid #ccc; border-radius:8px;}
-    button {
-      background:#2e7d32; color:white; border:none; padding:12px; width:100%;
-      border-radius:10px; margin-top:15px; cursor:pointer; font-size:1rem;
-    }
+    button {background:#2e7d32; color:white; border:none; padding:12px; width:100%; border-radius:10px; margin-top:15px; cursor:pointer; font-size:1rem;}
     button:hover {background:#1b5e20;}
     .error {color:red; font-size:0.9rem;}
     .link {text-align:center; margin-top:10px;}
 
-    /* Centered message div */
-    #message {
-      display:none;
-      position:absolute;
-      top:50%;
-      left:50%;
-      transform:translate(-50%, -50%);
-      padding:15px 20px;
-      border-radius:10px;
-      font-weight:bold;
-      text-align:center;
-      z-index:1000;
-    }
+    #message {display:none; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); padding:15px 20px; border-radius:10px; font-weight:bold; text-align:center; z-index:1000;}
     #message.success {background:#d4edda; color:#155724;}
     #message.error {background:#f8d7da; color:#721c24;}
     #okBtn {margin-top:10px; padding:5px 15px; font-weight:bold; border:none; border-radius:5px; cursor:pointer;}
 
-    footer {
-      background:white; color:#809D3C; padding:30px 20px; text-align:center;
-      border-top:2px solid #5D8736; margin-top:80px;
-    }
+    footer {background:white; color:#809D3C; padding:30px 20px; text-align:center; border-top:2px solid #5D8736; margin-top:80px;}
     .footer-container {display:flex; justify-content:space-between; flex-wrap:wrap; max-width:1200px; margin:auto;}
     .footer-logo {display:flex; align-items:center; font-size:22px; font-weight:bold;}
     .footer-logo video {width:50px;height:50px;margin-right:10px;border-radius:5px;}
@@ -106,9 +78,9 @@
     </form>
     <div class="link">Already registered? <a href="consumer_login18.html">Login here</a></div>
 
-    <!-- Centered message div with OK button -->
     <div id="message">
       <span id="messageText"></span>
+      <button id="okBtn">OK</button>
     </div>
   </div>
 
@@ -137,57 +109,93 @@
     <p class="footer-copy">&copy; 2025 Agridirect. All Rights Reserved.</p>
   </footer>
 
-  <!-- AJAX Submission Script -->
-  <script>
-    const form = document.getElementById("consumerForm");
-    const messageDiv = document.getElementById("message");
-    const messageText = document.getElementById("messageText");
-    const okBtn = document.getElementById("okBtn");
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const productId = urlParams.get("productId");
+  const farmerId = urlParams.get("farmerId");
+  const name = urlParams.get("name");
+  const price = urlParams.get("price");
 
-    form.addEventListener("submit", async function(e){
-      e.preventDefault();
+  if (productId && farmerId && name && price) {
+    localStorage.setItem("checkoutProduct", JSON.stringify({ productId, farmerId, name, price }));
+  }
 
-      let phone=document.getElementById("cphone").value;
-      if(!/^\d{10}$/.test(phone)){
-        messageText.innerText="Phone must be 10 digits!";
-        messageDiv.className="error";
-        messageDiv.style.display="block";
-        okBtn.style.display="inline-block";
-        okBtn.onclick = () => messageDiv.style.display = "none";
+  const form = document.getElementById("consumerForm");
+  const messageDiv = document.getElementById("message");
+  const messageText = document.getElementById("messageText");
+  const okBtn = document.getElementById("okBtn");
+
+  form.addEventListener("submit", async function(e){
+    e.preventDefault();
+
+    let phone=document.getElementById("cphone").value;
+    if(!/^\d{10}$/.test(phone)){
+      messageText.innerText="Phone must be 10 digits!";
+      messageDiv.className="error";
+      messageDiv.style.display="block";
+      okBtn.style.display="inline-block";
+      okBtn.onclick = () => messageDiv.style.display = "none";
+      return;
+    }
+
+    const formData = new FormData(form);
+    const dataObj = {};
+    formData.forEach((value, key) => dataObj[key] = value);
+
+    try {
+      const checkRes = await fetch("http://localhost:5000/consumer/check-email", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({email: dataObj.email})
+      });
+      const checkData = await checkRes.json();
+
+      if(checkData.exists){
+        alert("Account already exists! Redirecting to login.");
+        window.location.href = `consumer_login18.html`;
         return;
       }
 
-      const formData = new FormData(form);
-      const dataObj = {};
-      formData.forEach((value, key) => dataObj[key] = value);
+      const res = await fetch("http://localhost:5000/consumer/register", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify(dataObj)
+      });
 
-      try {
-        const res = await fetch("http://localhost:5000/consumer/register", {
-          method: "POST",
-          headers: {"Content-Type":"application/json"},
-          body: JSON.stringify(dataObj)
-        });
+      const data = await res.json();
 
-        const data = await res.json();
+      if(data.success){ 
+        // ✅ Save login info immediately
+        localStorage.setItem("consumerId", data.consumer._id);
+        localStorage.setItem("consumerName", data.consumer.name);
+        localStorage.setItem("consumerEmail", data.consumer.email);
 
-        // Show message
-        messageText.innerText = data.message || "Success!";
-        messageDiv.className = data.status || "success"; // success or error
-        messageDiv.style.display = "block";
-        // Automatically go to login page after 2 seconds
-      setTimeout(() => {
-        window.location.href = "consumer_login18.html";
-    }, 2000); // 2000ms = 2 seconds
-
-      } catch(err){
-        messageText.innerText = "Server error!";
+        // ✅ Redirect straight to checkout if product exists
+        const checkoutProduct = localStorage.getItem("checkoutProduct");
+        if(checkoutProduct){
+          const p = JSON.parse(checkoutProduct);
+          setTimeout(() => {
+          window.location.href = `checkout.html?productId=${p.productId}&farmerId=${p.farmerId}&name=${encodeURIComponent(p.name)}&price=${p.price}`;
+          }, 2000);
+        } else {
+          window.location.href = "consumer_login18.html";
+        }
+      } else {
+        messageText.innerText = data.message || "Error registering!";
         messageDiv.className = "error";
         messageDiv.style.display = "block";
-        okBtn.style.display = "inline-block";
-        okBtn.onclick = () => messageDiv.style.display = "none";
       }
-    });
-  </script>
+
+    } catch(err){
+      console.error(err);
+      messageText.innerText = "Server error!";
+      messageDiv.className = "error";
+      messageDiv.style.display = "block";
+      okBtn.style.display = "inline-block";
+      okBtn.onclick = () => messageDiv.style.display = "none";
+    }
+  });
+</script>
 
 </body>
 </html>

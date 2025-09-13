@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AgriDirect | My Orders</title>
+  <style>
+    body {font-family: Arial, sans-serif; background:#f6fff6; margin:0;margin-bottom: 0px;}
+    nav {
+      display:flex; justify-content:space-between; align-items:center;
+      background:#5D8736; padding:15px 30px; font-size: larger;
+    }
+    .logo {display:flex; align-items:center;}
+    .logo video {width:50px;height:50px;margin-right:10px;border-radius:5px;}
+    .logo-text {font-size:24px;font-weight:bold;color:#fff;}
+    nav ul {list-style:none; display:flex;}
+    nav ul li {margin:0 15px; padding:7px;}
+    nav ul li a {text-decoration:none; color:#fff; font-weight:bold;}
+    nav ul li a:hover {color:#F4FFC3;}
+
+    .container {max-width:900px; margin:40px auto; padding:20px;transition: transform 0.3s ease, background 0.3s ease;}
+     .container:hover {
+        transform: scale(1.1);
+    }
+
+    h2 {text-align:center; color:#2e7d32;}
+
+    .order-card {
+      background:white; padding:20px; margin:15px 0; border-radius:12px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    footer {
+      background:white; color:#809D3C; padding:30px 20px; text-align:center;
+      border-top:2px solid #5D8736; margin-top:80px;
+    }
+    .footer-container {display:flex; justify-content:space-between; flex-wrap:wrap; max-width:1200px; margin:auto;}
+    .footer-logo {display:flex; align-items:center; font-size:22px; font-weight:bold;}
+    .footer-logo video {width:50px;height:50px;margin-right:10px;border-radius:5px;}
+    .footer-social a img {width:30px;margin:0 10px;transition:transform 0.3s;}
+    .footer-social a img:hover {transform:scale(1.2);}
+    .footer-copy {margin-top:15px;font-size:14px;opacity:0.8;}
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav>
+    <div class="logo">
+      <video autoplay loop muted>
+        <source src="image/agridirect.mp4" type="video/mp4">
+      </video>
+      <span class="logo-text">AgriDirect</span>
+    </div>
+    <ul>
+      <li><a href="shared_homepage.html">HOME</a></li>
+      <li><a href="Marketplace.html">MARKETPLACE</a></li>
+      <li><a href="qr-scan.html">SCAN QR CODE</a></li>
+      <li><a href="about_us.html">ABOUT US</a></li>
+      <li><a href="role.html">LOGIN/SIGN UP</a></li>
+    </ul>
+  </nav>
+
+  <!-- Orders -->
+  <div class="container">
+    <h2>My Orders</h2>
+    <div id="ordersContainer"></div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-container">
+      <div class="footer-logo">
+        <video autoplay loop muted playsinline>
+          <source src="image/logo.mp4" type="video/mp4">
+        </video>
+        <span>AgriDirect</span>
+      </div>
+      <div class="footer-contact">
+        <h3>Contact Us</h3>
+        <p>Email: support@agriDirect.com</p>
+        <p>Phone: +91 10101 01010</p>
+      </div>
+      <div class="footer-social">
+        <h3>Follow Us</h3>
+        <a href="#"><img src="image/linkedin.png" alt="LinkedIn"></a>
+        <a href="#"><img src="image/twitter.png" alt="Twitter"></a>
+        <a href="#"><img src="image/instagram.png" alt="Instagram"></a>
+        <a href="#"><img src="image/youtube.png" alt="YouTube"></a>
+      </div>
+    </div>
+    <p class="footer-copy">&copy; 2025 Agridirect. All Rights Reserved.</p>
+  </footer>
+
+  <!-- Orders Script -->
+  <script>
+    (async function(){
+      const consumerId = localStorage.getItem("consumerId");  // ✅ take from localStorage
+      if (!consumerId) {
+        document.getElementById("ordersContainer").innerHTML = "<p>Please login first.</p>";
+        return;
+      }
+
+      try {
+        const res = await fetch(`http://localhost:5000/orders?consumerId=${consumerId}`);
+        const data = await res.json();
+
+        if (!data.success || !data.orders || !data.orders.length) {
+          document.getElementById("ordersContainer").innerHTML = "<p>No orders found.</p>";
+          return;
+        }
+
+        const container = document.getElementById("ordersContainer");
+        container.innerHTML = "";
+        data.orders.forEach(order => {
+          const div = document.createElement("div");
+          div.className = "order-card";
+
+          // Format date if available
+          let orderDate = order.createdAt ? new Date(order.createdAt).toLocaleString() : "N/A";
+          let orderStatus = order.status || "Pending";
+
+          div.innerHTML = `
+            <h3>${order.productName}</h3>
+            <p><b>Price:</b> ₹${order.unitPrice}</p>
+            <p><b>Quantity:</b> ${order.quantity}</p>
+            <p><b>Total:</b> ₹${order.totalPrice}</p>
+            <p><b>Farmer name:</b> ${order.farmerId}</p>
+            <p><b>Order Date:</b> ${order.date}</p>
+            <p><b>Status:</b> ${orderStatus}</p>
+          `;
+          container.appendChild(div);
+        });
+      } catch (err) {
+        document.getElementById("ordersContainer").innerHTML = "<p>Error loading orders!</p>";
+      }
+    })();
+  </script>
+</body>
+</html>

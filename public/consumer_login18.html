@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>AgriDirect | Consumer Sign Up</title>
+  <title>AgriDirect | Consumer Login</title>
   <style>
     body {font-family: Arial, sans-serif; background:#f6fff6; margin:0;}
     nav {
@@ -23,10 +23,7 @@
       transition: transform 0.3s ease, background 0.3s ease;
       position: relative;
     }
-    .form-container:hover {
-      transform: scale(1.1);
-    }
-
+    .form-container:hover { transform: scale(1.1); }
     h2 {text-align:center; color:#2e7d32;}
     label {display:block; margin-top:10px; font-weight:bold;}
     input {width:100%; padding:10px; margin-top:5px; border:1px solid #ccc; border-radius:8px;}
@@ -37,7 +34,6 @@
     button:hover {background:#1b5e20;}
     .link {text-align:center; margin-top:10px;}
 
-    /* Centered message div */
     #message {
       display:none;
       position:absolute;
@@ -90,20 +86,17 @@
     <form id="consumerLoginForm">
       <label>Full Name</label>
       <input type="text" name="name" required>
-
       <label>Email</label>
       <input type="email" name="email" required>
-
       <label>Password</label>
       <input type="password" name="password" minlength="6" required>
-
       <button type="submit">Login</button>
     </form>
     <div class="link">New Customer? <a href="consumer_signup18.html">Register</a></div>
 
-    <!-- Centered message div with OK button -->
     <div id="message">
       <span id="messageText"></span>
+      <button id="okBtn">OK</button>
     </div>
   </div>
 
@@ -131,49 +124,77 @@
     </div>
     <p class="footer-copy">&copy; 2025 Agridirect. All Rights Reserved.</p>
   </footer>
+  <script>
+  // ✅ Clear checkoutProduct if user opens login page directly
+  if (!document.referrer.includes("Marketplace.html")) {
+    localStorage.removeItem("checkoutProduct");
+  }
+</script>
+
 
   <!-- AJAX Login Script -->
-  <script>
-    const loginForm = document.getElementById("consumerLoginForm");
-    const messageDiv = document.getElementById("message");
-    const messageText = document.getElementById("messageText");
-    const okBtn = document.getElementById("okBtn");
+<script>
+  const loginForm = document.getElementById("consumerLoginForm");
+  const messageDiv = document.getElementById("message");
+  const messageText = document.getElementById("messageText");
+  const okBtn = document.getElementById("okBtn");
 
-    loginForm.addEventListener("submit", async function(e){
-      e.preventDefault();
-      const formData = new FormData(loginForm);
-      const dataObj = {};
-      formData.forEach((value,key) => dataObj[key] = value);
+  loginForm.addEventListener("submit", async function(e){
+    e.preventDefault();
+    const formData = new FormData(loginForm);
+    const dataObj = {};
+    formData.forEach((value,key) => dataObj[key] = value);
 
-      try {
-        const res = await fetch("http://localhost:5000/consumer/login", {
-          method:"POST",
-          headers: {"Content-Type":"application/json"},
-          body: JSON.stringify(dataObj)
-        });
+    try {
+      const res = await fetch("http://localhost:5000/consumer/login", {
+        method:"POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify(dataObj)
+      });
 
-        const data = await res.json();
+      const data = await res.json();
 
-        messageText.innerText = data.message || "Login status unknown!";
-        messageDiv.className = data.status || "success";
-        messageDiv.style.display = "block";
+      messageText.innerText = data.message || "Login status unknown!";
+      messageDiv.className = data.status || "success";
+      messageDiv.style.display = "block";
 
-        // Automatically go to login page after 2 seconds
-      setTimeout(() => {
-        window.location.href = "farmer_login18.html";
-    }, 2000); // 2000ms = 2 seconds
+      if ((data.status && data.status.toLowerCase() === "success") || data.success) {
+        if (data.consumer) {
+          // Save consumer details
+          localStorage.setItem("consumerId", data.consumer._id);
+          localStorage.setItem("consumerName", data.consumer.name);
+          localStorage.setItem("consumerEmail", data.consumer.email);
+          localStorage.setItem("consumerMobile", data.consumer.mobile || "");
 
-      } catch(err){
-        messageText.innerText = "Server error!";
-        messageDiv.className = "error";
-        messageDiv.style.display = "block";
-        okBtn.style.display = "inline-block";
-        okBtn.onclick = function(){
+          const checkoutProduct = JSON.parse(localStorage.getItem("checkoutProduct") || "{}");
+
+          // hide popup before redirect
           messageDiv.style.display = "none";
-        };
+
+          if (checkoutProduct && checkoutProduct.productId) {
+            // Redirect to checkout
+            window.location.href = `checkout.html?productId=${encodeURIComponent(checkoutProduct.productId)}&farmerId=${encodeURIComponent(checkoutProduct.farmerId)}&name=${encodeURIComponent(checkoutProduct.name)}&price=${encodeURIComponent(checkoutProduct.price)}&consumerId=${encodeURIComponent(data.consumer._id)}`;
+          } else {
+            // Clear leftover checkout data and go dashboard
+            localStorage.removeItem("checkoutProduct");
+            window.location.href = "consumer_dashboard.html";
+          }
+        }
       }
-    });
-  </script>
+      else {
+        okBtn.style.display = "inline-block";
+        okBtn.onclick = function(){ messageDiv.style.display = "none"; };
+      }
+
+    } catch(err){
+      messageText.innerText = "Server error!";
+      messageDiv.className = "error";
+      messageDiv.style.display = "block";
+      okBtn.style.display = "inline-block";
+      okBtn.onclick = function(){ messageDiv.style.display = "none"; };
+    }
+  });
+</script>
 
 </body>
 </html>
