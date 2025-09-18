@@ -1,4 +1,4 @@
-cehckout.html:-<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -10,28 +10,45 @@ cehckout.html:-<!DOCTYPE html>
       margin: 0; 
       padding: 0;
     }
-    .checkout-container {
+    .checkout-container, .success-container {
       max-width: 600px; 
       margin: 120px auto 0 auto; 
       background: #fff; 
       padding: 25px;
       border-radius: 12px; 
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      text-align: center;
     }
-    h2 { text-align: center; color: #2c662d; margin-bottom: 20px; }
-    label { display: block; margin-top: 10px; font-weight: bold; }
-    input, select, textarea {
+    h2 { color: #2c662d; margin-bottom: 20px; }
+    label { display: block; margin-top: 10px; font-weight: bold; text-align: left; }
+    input, textarea {
       width: 100%; padding: 10px; margin-top: 5px;
       border: 1px solid #ccc; border-radius: 8px;
     }
-    .price-box { margin-top: 10px; font-weight: bold; color: #28a745; }
-    .pay-btn {
-      background: #28a745; color: white; border: none;
-      padding: 12px; width: 100%; font-size: 16px;
-      border-radius: 8px; cursor: pointer; margin-top: 20px;
+    .price-box { margin-top: 10px; font-weight: bold; color: #28a745; text-align: left; }
+    .option {
+      margin: 12px 0;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: left;
     }
-    .pay-btn:hover { background: #218838; }
-    .payment-details { margin-top: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; display: none; }
+    .option:hover { background: #f0f0f0; }
+    .details { display: none; margin-top: 10px; }
+    button {
+      background: #28a745;
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    button:hover { background: #218838; }
+    img { width: 150px; margin-top: 10px; }
 
     /* Navbar */
     nav {
@@ -76,6 +93,44 @@ cehckout.html:-<!DOCTYPE html>
     .footer-social a img { width: 30px; margin: 0 10px; transition: transform 0.3s ease-in-out; }
     .footer-social a img:hover { transform: scale(1.2); }
     .footer-copy { margin-top: 15px; font-size: 14px; opacity: 0.8; }
+
+    /* Success animation */
+    .success-container {
+      display: none;
+    }
+    .checkmark {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: inline-block;
+      border: 4px solid #28a745;
+      position: relative;
+      box-sizing: border-box;
+      margin: 20px 0;
+    }
+    .checkmark::after {
+      content: "";
+      position: absolute;
+      left: 20px;
+      top: 35px;
+      width: 20px;
+      height: 40px;
+      border-right: 4px solid #28a745;
+      border-bottom: 4px solid #28a745;
+      transform: rotate(45deg) scale(0);
+      transform-origin: left top;
+      animation: tick 0.6s ease forwards 0.3s;
+    }
+    @keyframes tick {
+      to { transform: rotate(45deg) scale(1); }
+    }
+    .fade-in {
+      animation: fadeIn 0.8s ease forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to   { opacity: 1; transform: scale(1); }
+    }
   </style>
 </head>
 <body>
@@ -99,8 +154,8 @@ cehckout.html:-<!DOCTYPE html>
     </nav>
   </header>
 
-  <!-- Checkout Form -->
-  <div class="checkout-container">
+  <!-- Checkout Section -->
+  <div class="checkout-container" id="checkout">
     <h2>Checkout</h2>
     <form id="checkoutForm">
       <label>Product Name:</label>
@@ -117,20 +172,44 @@ cehckout.html:-<!DOCTYPE html>
       <label>Delivery Address:</label>
       <textarea id="address" name="address" rows="3" required></textarea>
 
-      <label>Payment Method:</label>
-      <select id="paymentMethod" name="paymentMethod" required>
-        <option value="">-- Select Payment Method --</option>
-        <option value="gpay">Google Pay</option>
-        <option value="paytm">Paytm</option>
-        <option value="upi">UPI</option>
-        <option value="cod">Cash on Delivery</option>
-      </select>
+      <!-- Payment Options -->
+      <h3>Select Payment Method</h3>
+      <div class="option" onclick="showDetails('card')">
+        💳 Credit/Debit Card
+        <div id="card" class="details">
+          <input type="text" placeholder="Card Number">
+          <input type="text" placeholder="MM/YY">
+          <input type="text" placeholder="CVV">
+          <input type="text" placeholder="Card Holder Name">
+          <button type="button" onclick="payNow('card')">Pay with Card</button>
+        </div>
+      </div>
 
-      <!-- Payment Details Section -->
-      <div class="payment-details" id="paymentDetails"></div>
+      <div class="option" onclick="showDetails('upi')">
+        📱 UPI / QR Code
+        <div id="upi" class="details">
+          <p>Scan this QR to pay:</p>
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=yourupi@bank" alt="QR Code">
+          <input type="text" placeholder="Enter UPI ID">
+          <button type="button" onclick="payNow('upi')">Pay with UPI</button>
+        </div>
+      </div>
 
-      <button type="submit" class="pay-btn">Place Order</button>
+      <div class="option" onclick="showDetails('cod')">
+        🚚 Cash on Delivery
+        <div id="cod" class="details">
+          <p>You will pay in cash when product is delivered.</p>
+          <button type="button" onclick="payNow('cod')">Confirm COD</button>
+        </div>
+      </div>
     </form>
+  </div>
+
+  <!-- Success Section -->
+  <div class="success-container fade-in" id="success">
+    <div class="checkmark"></div>
+    <h2>Payment Successful 🎉</h2>
+    <p>Thank you! Your order has been placed.</p>
   </div>
 
   <!-- Footer -->
@@ -162,7 +241,7 @@ cehckout.html:-<!DOCTYPE html>
 
   <script>
     const params = new URLSearchParams(window.location.search);
-    const productName = params.get("name") ? decodeURIComponent(params.get("name")) : "Unknown Product"; // ✅ FIXED
+    const productName = params.get("name") ? decodeURIComponent(params.get("name")) : "Unknown Product";
     const price = params.get("price") ? parseFloat(params.get("price")) : 0;
     const productId = params.get("productId") || ""; 
     const consumerId = localStorage.getItem("consumerId"); 
@@ -182,25 +261,12 @@ cehckout.html:-<!DOCTYPE html>
       totalPriceSpan.innerText = (price || 0) * qty;
     });
 
-    const paymentMethod = document.getElementById("paymentMethod");
-    const paymentDetails = document.getElementById("paymentDetails");
+    function showDetails(id) {
+      document.querySelectorAll('.details').forEach(div => div.style.display = 'none');
+      document.getElementById(id).style.display = 'block';
+    }
 
-    paymentMethod.addEventListener("change", () => {
-      let method = paymentMethod.value;
-      paymentDetails.style.display = "block";
-      if (method === "gpay") {
-        paymentDetails.innerHTML = "<p>Pay using Google Pay: <b>gpay-123@upi</b></p>";
-      } else if (method === "paytm") {
-        paymentDetails.innerHTML = "<p>Pay using Paytm: <b>paytm-987@upi</b></p>";
-      } else if (method === "upi") {
-        paymentDetails.innerHTML = "<p>Pay using UPI ID: <b>farmerupi@okicici</b></p>";
-      } else if (method === "cod") {
-        paymentDetails.innerHTML = "<p><b>Cash on Delivery</b> selected. Pay at delivery.</p>";
-      }
-    });
-
-    document.getElementById("checkoutForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
+    async function payNow(method) {
       if (!consumerId) {
         alert("⚠️ Please login as consumer first!");
         window.location.href = "consumer_login18.html";
@@ -214,7 +280,7 @@ cehckout.html:-<!DOCTYPE html>
         quantity: parseInt(quantityInput.value),
         totalPrice: parseInt(quantityInput.value) * price,
         address: document.getElementById("address").value,
-        paymentMethod: paymentMethod.value,
+        paymentMethod: method,
         consumerId,
         consumerName,   
         consumerEmail,  
@@ -229,8 +295,8 @@ cehckout.html:-<!DOCTYPE html>
         });
         const data = await res.json();
         if (data.success) {
-          alert("✅ Order placed successfully!");
-          window.location.href = "marketplace.html";
+          document.getElementById('checkout').style.display = 'none';
+          document.getElementById('success').style.display = 'block';
         } else {
           alert("❌ Error placing order. Try again.");
         }
@@ -238,7 +304,7 @@ cehckout.html:-<!DOCTYPE html>
         console.error(err);
         alert("⚠️ Server error. Make sure backend is running.");
       }
-    });
+    }
   </script>
 </body>
-</html> 
+</html>
