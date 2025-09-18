@@ -344,7 +344,7 @@
   function redirectToCheckout(productId, farmerId, name, price) {
     localStorage.setItem("checkoutProduct", JSON.stringify({ productId, farmerId, name, price }));
     const consumerId = localStorage.getItem("consumerId");
-    window.location.href = `consumer_signup18.html?productId=${encodeURIComponent(productId)}&farmerId=${encodeURIComponent(farmerId)}&name=${encodeURIComponent(name)}&price=${encodeURIComponent(price)}&consumerId=${encodeURIComponent(consumerId)}`;
+    window.location.href = `checkout.html?productId=${encodeURIComponent(productId)}&farmerId=${encodeURIComponent(farmerId)}&name=${encodeURIComponent(name)}&price=${encodeURIComponent(price)}&consumerId=${encodeURIComponent(consumerId)}`;
   }
 
   function showQR(button, farmerName, farmerLocation, productName) {
