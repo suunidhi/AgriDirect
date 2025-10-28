@@ -27,7 +27,6 @@
       gap: 20px;
     }
 
-    /* Flip card */
     .card-container { perspective: 1000px; }
     .product-card {
       width: 100%;
@@ -120,7 +119,6 @@
       height: 150px;
     }
 
-    /* Navbar */
     nav {
       display: flex;
       justify-content: space-between;
@@ -156,7 +154,6 @@
     }
     nav ul li a:hover { color:#F4FFC3; }
 
-    /* Footer */
     footer {
       background:white;
       color:#809D3C;
@@ -200,7 +197,6 @@
 </head>
 <body>
 
-  <!-- Navbar -->
   <header>
     <nav>
       <div class="logo">
@@ -228,7 +224,6 @@
     </div>
   </main>
 
-  <!-- Footer -->
   <footer>
     <div class="footer-container">
       <div class="footer-logo">
@@ -255,7 +250,6 @@
     <p class="footer-copy">&copy; 2025 AgriDirect. All Rights Reserved.</p>
   </footer>
 
-  <!-- QRCode.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script>
   async function loadProducts() {
@@ -270,6 +264,8 @@
         data.products.forEach(p => {
           const wrapper = document.createElement("div");
           wrapper.className = "card-container";
+
+          const productData = encodeURIComponent(JSON.stringify(p));
 
           wrapper.innerHTML = `
             <div class="product-card">
@@ -288,7 +284,7 @@
                       🛒 Buy Now
                     </button>
                     <button class="btn-sqr"
-                      onclick="event.stopPropagation(); showQR(this, ${JSON.stringify(p)})">
+                      onclick="event.stopPropagation(); showQR(this, '${productData}')">
                       Verify Farmer
                     </button>
                   </div>
@@ -325,7 +321,8 @@
     window.location.href = `checkout.html?productId=${encodeURIComponent(productId)}&farmerId=${encodeURIComponent(farmerId)}&name=${encodeURIComponent(name)}&price=${encodeURIComponent(price)}&consumerId=${encodeURIComponent(consumerId)}`;
   }
 
-  function showQR(button, product) {
+  function showQR(button, encodedProduct) {
+    const product = JSON.parse(decodeURIComponent(encodedProduct));
     const card = button.closest(".product-card");
     card.classList.add("is-flipped");
 
@@ -347,11 +344,11 @@ Verification: ${product.farmerId?.verificationStatus || "Pending"}
       `;
 
       new QRCode(qrContainer, {
-        text: qrText,
+        text: qrText.trim(),
         width: 150,
         height: 150
       });
-    }, 300);
+    }, 400);
   }
   </script>
 </body>

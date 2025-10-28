@@ -109,6 +109,10 @@
       <label>Upload Farming Certificate</label>
       <input type="file" name="certificate" accept=".pdf,.jpg,.jpeg,.png" required>
 
+      <!-- ✅ Added: Upload QR Code for Payments -->
+      <label>Upload Payment QR Code</label>
+      <input type="file" name="qrCode" accept="image/*" required>
+
       <label>Farming Experience (years)</label>
       <input type="number" name="experience" min="0" required>
 
@@ -186,9 +190,9 @@
         messageDiv.className = data.status || "success"; // success or error
         messageDiv.style.display = "block";
         // Automatically go to login page after 2 seconds
-      setTimeout(() => {
-        window.location.href = "farmer_login18.html";
-    }, 2000); // 2000ms = 2 seconds
+        setTimeout(() => {
+          window.location.href = "farmer_login18.html";
+        }, 2000); // 2000ms = 2 seconds
 
       } catch(err){
         messageText.innerText = "Server error!";
@@ -201,4 +205,4 @@
   </script>
 
 </body>
-</html>  
+</html>

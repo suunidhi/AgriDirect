@@ -29,7 +29,9 @@ const farmerSchema = new mongoose.Schema({
   email: { type: String, unique: true },
   password: String,
   certificate: String,
+  qrCode: String, // ✅ new field to store payment QR image
 });
+
 const Farmer = mongoose.model("Farmer", farmerSchema);
 
 const consumerSchema = new mongoose.Schema({
@@ -38,18 +40,29 @@ const consumerSchema = new mongoose.Schema({
   mobile: String,
   password: String,
 });
-const Consumer = mongoose.model("Consumer", consumerSchema);
-
-const productSchema = new mongoose.Schema({
-  farmerId: { type: mongoose.Schema.Types.ObjectId, ref: "Farmer" },
+const ProductSchema = new mongoose.Schema({
+  farmerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Farmer",
+    required: true,
+  },
   name: String,
   category: String,
   price: Number,
   quantity: Number,
   location: String,
   image: String,
+  harvestDate: Date,
+  moisture: Number,
+  protein: Number,
+  pesticideResidue: Number,
+  soilPh: Number,
+  labReport: String,
 });
-const Product = mongoose.model("Product", productSchema);
+
+
+const Product = mongoose.model("Product", ProductSchema);
+
 
 // ✅ Order Schema (linked to product + farmer + consumer)
 const orderSchema = new mongoose.Schema({
@@ -75,11 +88,15 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
 });
 const upload = multer({ storage });
+const uploadMultiple = upload.fields([
+  { name: "certificate", maxCount: 1 },
+  { name: "qrCode", maxCount: 1 }   
+]);
 
 // ------------------ FARMER ROUTES ------------------
 
 // ✅ Register
-app.post("/farmer/register", upload.single("certificate"), async (req, res) => {
+app.post("/farmer/register", uploadMultiple, async (req, res) => {
   try {
     const { name, farmName, location, mobile, experience, email, password } = req.body;
 
@@ -96,7 +113,8 @@ app.post("/farmer/register", upload.single("certificate"), async (req, res) => {
       experience,
       email,
       password: hashedPassword,
-      certificate: req.file ? req.file.filename : null,
+      certificate: req.files?.certificate ? req.files.certificate[0].filename : null,
+      qrCode: req.files?.qrCode ? req.files.qrCode[0].filename : null, // ✅ store QR image
     });
 
     await farmer.save();
@@ -106,6 +124,7 @@ app.post("/farmer/register", upload.single("certificate"), async (req, res) => {
     res.json({ status: "error", message: "Error registering farmer" });
   }
 });
+
 
 // ✅ Login
 app.post("/farmer/login", async (req, res) => {
@@ -136,27 +155,55 @@ app.post("/farmer/upload/:id", upload.single("photo"), (req, res) => {
 });
 
 // ✅ Add Product
-app.post("/farmer/addProduct/:farmerId", upload.single("image"), async (req, res) => {
+// ✅ Add Product
+app.post("/farmer/addProduct/:farmerId", upload.fields([
+  { name: "image", maxCount: 1 },
+  { name: "labReport", maxCount: 1 }
+]), async (req, res) => {
   try {
     const { farmerId } = req.params;
-    const { name, category, price, quantity, location } = req.body;
 
+    // ✅ Extract all fields from form
+    const {
+      name,
+      category,
+      price,
+      quantity,
+      location,
+      harvestDate,
+      moisture,
+      protein,
+      pesticide,
+      ph
+    } = req.body;
+
+    // ✅ Validate farmerId
     if (!mongoose.Types.ObjectId.isValid(farmerId)) {
       return res.json({ status: "error", message: "Invalid Farmer ID" });
     }
 
+    // ✅ Find farmer
     const farmer = await Farmer.findById(farmerId);
     if (!farmer) return res.json({ status: "error", message: "Farmer not found" });
 
-    if (!req.file) return res.json({ status: "error", message: "Product image is required!" });
-
-    const numericPrice = parseFloat(price);
-    const numericQuantity = parseFloat(quantity);
-
-    if (isNaN(numericPrice) || isNaN(numericQuantity)) {
-      return res.json({ status: "error", message: "Price and Quantity must be numbers" });
+    // ✅ Validate image
+    if (!req.files["image"]) {
+      return res.json({ status: "error", message: "Product image is required!" });
     }
 
+    // ✅ Parse numeric fields
+    const numericPrice = parseFloat(price);
+    const numericQuantity = parseFloat(quantity);
+    const numericMoisture = parseFloat(moisture);
+    const numericProtein = parseFloat(protein);
+    const numericPesticide = parseFloat(pesticide);
+    const numericPh = parseFloat(ph);
+
+    if ([numericPrice, numericQuantity].some(isNaN)) {
+      return res.json({ status: "error", message: "Price and Quantity must be valid numbers" });
+    }
+
+    // ✅ Create product object
     const product = new Product({
       farmerId,
       name,
@@ -164,12 +211,26 @@ app.post("/farmer/addProduct/:farmerId", upload.single("image"), async (req, res
       price: numericPrice,
       quantity: numericQuantity,
       location,
-      image: `/uploads/${req.file.filename}`,
+      image: `/uploads/${req.files["image"][0].filename}`,
+      harvestDate: harvestDate ? new Date(harvestDate) : null,
+      moisture: numericMoisture,
+      protein: numericProtein,
+      pesticideResidue: numericPesticide,
+      soilPh: numericPh,
+      labReport: req.files["labReport"]
+        ? `/uploads/${req.files["labReport"][0].filename}`
+        : null
     });
 
+    // ✅ Save to DB
     await product.save();
 
-    res.json({ status: "success", message: "Product added successfully!", filePath: product.image });
+    res.json({
+      status: "success",
+      message: "Product added successfully!",
+      filePath: product.image,
+    });
+
   } catch (error) {
     console.error("Add Product Error:", error);
     res.json({ status: "error", message: "Error adding product" });
@@ -403,6 +464,21 @@ app.get("/farmer/orders/:farmerId", async (req, res) => {
   } catch (err) {
     console.error("Get Farmer Orders Error:", err);
     res.status(500).json({ success: false, message: "Error fetching farmer orders" });
+  }
+});
+app.get("/farmer/:id/qr", async (req, res) => {
+  try {
+    const farmer = await Farmer.findById(req.params.id);
+    if (!farmer || !farmer.qrCode)
+      return res.json({ success: false, message: "QR not found" });
+
+    res.json({
+      success: true,
+      qrUrl: `/uploads/${farmer.qrCode}`, // ✅ renamed
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 });
 
