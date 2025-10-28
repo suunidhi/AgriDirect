@@ -124,16 +124,9 @@
     </div>
     <p class="footer-copy">&copy; 2025 Agridirect. All Rights Reserved.</p>
   </footer>
+
+  <!-- ✅ Login Logic -->
   <script>
-  // ✅ Clear checkoutProduct if user opens login page directly
-  if (!document.referrer.includes("Marketplace.html")) {
-    localStorage.removeItem("checkoutProduct");
-  }
-</script>
-
-
-  <!-- AJAX Login Script -->
-<script>
   const loginForm = document.getElementById("consumerLoginForm");
   const messageDiv = document.getElementById("message");
   const messageText = document.getElementById("messageText");
@@ -141,6 +134,7 @@
 
   loginForm.addEventListener("submit", async function(e){
     e.preventDefault();
+
     const formData = new FormData(loginForm);
     const dataObj = {};
     formData.forEach((value,key) => dataObj[key] = value);
@@ -160,23 +154,23 @@
 
       if ((data.status && data.status.toLowerCase() === "success") || data.success) {
         if (data.consumer) {
-          // Save consumer details
+          // ✅ Save consumer details to localStorage
           localStorage.setItem("consumerId", data.consumer._id);
           localStorage.setItem("consumerName", data.consumer.name);
           localStorage.setItem("consumerEmail", data.consumer.email);
           localStorage.setItem("consumerMobile", data.consumer.mobile || "");
 
+          // ✅ Get checkout data (if any)
           const checkoutProduct = JSON.parse(localStorage.getItem("checkoutProduct") || "{}");
 
-          // hide popup before redirect
+          // Hide popup before redirect
           messageDiv.style.display = "none";
 
           if (checkoutProduct && checkoutProduct.productId) {
-            // Redirect to checkout
+            // ✅ Redirect to checkout with all details
             window.location.href = `checkout.html?productId=${encodeURIComponent(checkoutProduct.productId)}&farmerId=${encodeURIComponent(checkoutProduct.farmerId)}&name=${encodeURIComponent(checkoutProduct.name)}&price=${encodeURIComponent(checkoutProduct.price)}&consumerId=${encodeURIComponent(data.consumer._id)}`;
           } else {
-            // Clear leftover checkout data and go dashboard
-            localStorage.removeItem("checkoutProduct");
+            // ✅ Redirect to dashboard if no product in checkout
             window.location.href = "consumer_dashboard.html";
           }
         }
@@ -187,6 +181,7 @@
       }
 
     } catch(err){
+      console.error(err);
       messageText.innerText = "Server error!";
       messageDiv.className = "error";
       messageDiv.style.display = "block";
@@ -194,7 +189,6 @@
       okBtn.onclick = function(){ messageDiv.style.display = "none"; };
     }
   });
-</script>
-
+  </script>
 </body>
 </html>
