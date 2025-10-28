@@ -110,6 +110,7 @@
   </footer>
 
 <script>
+  // ✅ Capture product details if redirected from marketplace
   const urlParams = new URLSearchParams(window.location.search);
   const productId = urlParams.get("productId");
   const farmerId = urlParams.get("farmerId");
@@ -151,8 +152,13 @@
       const checkData = await checkRes.json();
 
       if(checkData.exists){
-        alert("Account already exists! Redirecting to login.");
-        window.location.href = `consumer_login18.html`;
+        alert("Account already exists! Redirecting to login...");
+        const p = JSON.parse(localStorage.getItem("checkoutProduct") || "{}");
+        if(p.productId){
+          window.location.href = `consumer_login18.html?productId=${p.productId}&farmerId=${p.farmerId}&name=${encodeURIComponent(p.name)}&price=${p.price}`;
+        } else {
+          window.location.href = "consumer_login18.html";
+        }
         return;
       }
 
@@ -165,21 +171,18 @@
       const data = await res.json();
 
       if(data.success){ 
-        // ✅ Save login info immediately
-        localStorage.setItem("consumerId", data.consumer._id);
-        localStorage.setItem("consumerName", data.consumer.name);
-        localStorage.setItem("consumerEmail", data.consumer.email);
+        messageText.innerText = "Registration successful! Redirecting to login...";
+        messageDiv.className = "success";
+        messageDiv.style.display = "block";
 
-        // ✅ Redirect straight to checkout if product exists
-        const checkoutProduct = localStorage.getItem("checkoutProduct");
-        if(checkoutProduct){
-          const p = JSON.parse(checkoutProduct);
-          setTimeout(() => {
-          window.location.href = `checkout.html?productId=${p.productId}&farmerId=${p.farmerId}&name=${encodeURIComponent(p.name)}&price=${p.price}`;
-          }, 2000);
-        } else {
-          window.location.href = "consumer_login18.html";
-        }
+        setTimeout(() => {
+          const p = JSON.parse(localStorage.getItem("checkoutProduct") || "{}");
+          if(p.productId){
+            window.location.href = `consumer_login18.html?productId=${p.productId}&farmerId=${p.farmerId}&name=${encodeURIComponent(p.name)}&price=${p.price}`;
+          } else {
+            window.location.href = "consumer_login18.html";
+          }
+        }, 2000);
       } else {
         messageText.innerText = data.message || "Error registering!";
         messageDiv.className = "error";

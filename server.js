@@ -40,6 +40,8 @@ const consumerSchema = new mongoose.Schema({
   mobile: String,
   password: String,
 });
+const Consumer = mongoose.model("Consumer", consumerSchema);  // ✅ add this line!
+
 const ProductSchema = new mongoose.Schema({
   farmerId: {
     type: mongoose.Schema.Types.ObjectId,

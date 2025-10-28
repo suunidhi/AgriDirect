@@ -268,8 +268,8 @@
 
     async function payNow(method) {
       if (!consumerId) {
-        alert("⚠️ Please login as consumer first!");
-        window.location.href = "consumer_login18.html";
+        alert("⚠️ Please register as consumer first!");
+        window.location.href = "consumer_signup18.html";
         return;
       }
 
@@ -314,15 +314,16 @@
   }
 
   try {
-    const res = await fetch(`http://localhost:5000/farmer/${farmerId}/qr`);
-    const data = await res.json();
+const res = await fetch(`http://localhost:5000/farmer/${farmerId}/qr`);
+const data = await res.json();
 
-    if (data.qrCodeUrl) {
-      document.getElementById("farmerQR").src = `http://localhost:5000${data.qrCodeUrl}`;
-      document.getElementById("qrModal").style.display = "flex";
-    } else {
-      alert("QR not available for this farmer.");
-    }
+if (data.qrUrl) { // ✅ changed this line
+  document.getElementById("farmerQR").src = `http://localhost:5000${data.qrUrl}`;
+  document.getElementById("qrModal").style.display = "flex";
+} else {
+  alert("QR not available for this farmer.");
+}
+
   } catch (err) {
     console.error(err);
     alert("Error fetching farmer QR!");

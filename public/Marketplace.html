@@ -315,11 +315,22 @@
 
   loadProducts();
 
-  function redirectToCheckout(productId, farmerId, name, price) {
-    localStorage.setItem("checkoutProduct", JSON.stringify({ productId, farmerId, name, price }));
-    const consumerId = localStorage.getItem("consumerId") || "";
-    window.location.href = `checkout.html?productId=${encodeURIComponent(productId)}&farmerId=${encodeURIComponent(farmerId)}&name=${encodeURIComponent(name)}&price=${encodeURIComponent(price)}&consumerId=${encodeURIComponent(consumerId)}`;
-  }
+  // ✅ Fixed redirectToCheckout function
+function redirectToCheckout(productId, farmerId, name, price) {
+  const consumerId = localStorage.getItem("consumerId");
+  const isLoggedIn = consumerId && consumerId.trim() !== "";
+
+  const checkoutData = { productId, farmerId, name, price };
+  localStorage.setItem("checkoutProduct", JSON.stringify(checkoutData));
+
+
+    alert("Please sign up or login before purchasing.");
+    window.location.href = `consumer_signup18.html?productId=${encodeURIComponent(productId)}&farmerId=${encodeURIComponent(farmerId)}&name=${encodeURIComponent(name)}&price=${encodeURIComponent(price)}`;
+  
+
+  
+}
+
 
   function showQR(button, encodedProduct) {
     const product = JSON.parse(decodeURIComponent(encodedProduct));
