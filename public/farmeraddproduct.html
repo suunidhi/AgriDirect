@@ -3,159 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Farmer Dashboard - AgriDirect</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>Add Product - AgriDirect</title>
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f5f7f5;
-      margin: 0;
-      padding: 0;
-    }
-
-    /* Navbar */
-    nav {
-      height: 80px; 
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #5D8736;
-      padding: 15px 30px;
-      font-size: larger;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-    }
-
-    .logo video {
-      width: 50px;
-      height: 50px;
-      margin-right: 10px;
-      border-radius: 5px;
-    }
-
-    .logo-text {
-      font-size: 24px;
-      font-weight: bold;
-      color: #ffffff;
-    }
-
-    nav ul {
-      list-style: none;
-      display: flex;
-      margin: 0;
-      padding: 0;
-    }
-
-    nav ul li {
-      margin: 0 15px;
-      padding: 7px;
-      position: relative; 
-    }
-
-    nav ul li a {
-      text-decoration: none;
-      color: #ffffff;
-      font-weight: bold;
-    }
-
-    nav ul li a:hover {
-      color: #F4FFC3;
-    }
-
-    /* Dashboard container */
-    .container {
-      max-width: 700px;
-      margin: 40px auto;
-      background: #fff;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-    }
-
-    h2 {
-      text-align: center;
-      color: #2e7d32;
-      margin-bottom: 25px;
-    }
-
-    form label {
-      display: block;
-      font-weight: bold;
-      margin: 12px 0 6px;
-      color: #333;
-    }
-
-    form input, form select {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      margin-bottom: 16px;
-      font-size: 15px;
-    }
-
-    form input[type="file"] {
-      border: none;
-    }
-
-    .note {
-      font-size: 0.85rem;
-      color: #666;
-      margin-top: -10px;
-      margin-bottom: 15px;
-    }
-
-    button {
-      background: #5D8736;
-      color: #fff;
-      border: none;
-      padding: 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
-      width: 100%;
-      font-weight: bold;
-      transition: background 0.3s ease;
-      margin-bottom: 10px;
-    }
-
-    button:hover {
-      background: #4a6b2b;
-    }
-
-    .success { color: green; text-align: center; margin-top: 15px; }
-    .error { color: red; text-align: center; margin-top: 15px; }
-    .preview { display: block; margin: 10px auto; max-width: 200px; border-radius: 10px; }
+    body { font-family: 'Segoe UI', sans-serif; background-color: #f5f7f5; margin:0; padding:0; }
+    header { background: #5D8736; padding: 15px 30px; color: #fff; font-size:22px; text-align:center; }
+    .container { max-width: 700px; margin: 40px auto; background:#fff; padding:30px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.12);}
+    h2 { text-align:center; color:#2e7d32; margin-bottom:25px; }
+    form label { display:block; font-weight:bold; margin:12px 0 6px; color:#333;}
+    form input, form select { width:100%; padding:12px; border:1px solid #ccc; border-radius:8px; margin-bottom:16px; font-size:15px;}
+    form input[type="file"] { border:none; }
+    .note { font-size:0.85rem; color:#666; margin-top:-10px; margin-bottom:15px;}
+    h3 { color:#2e7d32; margin-top:25px; }
+    button { background:#5D8736; color:#fff; border:none; padding:14px; border-radius:8px; cursor:pointer; font-size:16px; width:100%; font-weight:bold; transition: background 0.3s;}
+    button:hover { background:#4a6b2b;}
+    @media (max-width:768px){ .container{ margin:20px; padding:20px; } }
   </style>
 </head>
 <body>
-  <!-- Navbar -->
-  <nav>
-      <div class="logo">
-          <video autoplay loop muted>
-              <source src="image/agridirect.mp4" type="video/mp4">
-          </video>
-          <span class="logo-text">AgriDirect</span>
-      </div>
-      <ul>
-          <li><a href="shared_homepage.html">HOME</a></li>
-          <li><a href="marketplace.html">MARKETPLACE</a></li>
-          <li><a href="qr-scan.html">SCAN QR CODE</a></li>
-          <li><a href="about_us.html">ABOUT US </a></li>
-          <li><a href="role.html">LOGIN/SIGN UP</a></li>
-      </ul>
-  </nav>
+  <header>AgriDirect - Add Product</header>
 
-  <!-- Dashboard Content -->
   <div class="container">
-    <h2 id="formTitle">🛒 Add New Product</h2>
+    <h2>🛒 Add New Product</h2>
     <form id="addProductForm" enctype="multipart/form-data">
       
       <label for="image">Product Image</label>
-      <input type="file" id="image" name="image" accept=".jpg, .jpeg, .png">
+      <input type="file" id="image" name="image" accept=".jpg, .jpeg, .png" required>
       <p class="note">Only JPG or PNG formats allowed.</p>
 
       <label for="name">Product Name</label>
@@ -167,7 +39,7 @@
         <option value="fruits">🍎 Fruits</option>
         <option value="vegetables">🥕 Vegetables</option>
         <option value="grains">🌾 Grains</option>
-        <option value="others">🛍️ Others</option>
+        <option value="others">🛍 Others</option>
       </select>
 
       <label for="price">Price per Unit (₹/kg)</label>
@@ -179,104 +51,65 @@
       <label for="location">Location</label>
       <input type="text" id="location" name="location" placeholder="Enter location" required>
 
-      <button type="submit" id="submitBtn">Add Product</button>
+      <!-- Crop Quality Details -->
+      <h3>🌱 Crop Quality Details</h3>
+
+      <label for="harvestDate">Harvest Date</label>
+      <input type="date" id="harvestDate" name="harvestDate" required>
+
+      <label for="moisture">Moisture Content (%)</label>
+      <input type="number" step="0.1" id="moisture" name="moisture" placeholder="Enter moisture content" required>
+
+      <label for="protein">Protein Content (%)</label>
+      <input type="number" step="0.1" id="protein" name="protein" placeholder="Enter protein content" required>
+
+      <label for="pesticide">Pesticide Residue (mg/kg)</label>
+      <input type="number" step="0.01" id="pesticide" name="pesticide" placeholder="Enter pesticide residue" required>
+
+      <label for="ph">Soil pH</label>
+      <input type="number" step="0.1" id="ph" name="ph" placeholder="Enter soil pH" required>
+
+      <label for="labReport">Lab Report (PDF)</label>
+      <input type="file" id="labReport" name="labReport" accept=".pdf">
+
+      <button type="submit">Add Product</button>
     </form>
-
-    <!-- View Products Button -->
-    <button type="button" onclick="window.location.href='marketplacefarmer.html'">View My Products</button>
-
-    <!-- Success / Error Messages -->
-    <div id="message"></div>
-    <!-- Preview Uploaded Image -->
-    <img id="preview" class="preview" style="display:none;">
   </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", async function () {
-      const addProductForm = document.getElementById("addProductForm");
-      const messageEl = document.getElementById("message");
-      const preview = document.getElementById("preview");
-      const submitBtn = document.getElementById("submitBtn");
-      const formTitle = document.getElementById("formTitle");
+    document.getElementById("addProductForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
 
-      const farmerId = localStorage.getItem("farmerId"); 
-      const urlParams = new URLSearchParams(window.location.search);
-      const productId = urlParams.get("productId"); 
+      const formData = new FormData(this);
 
-      // If productId exists → Editing mode
-      if (productId) {
-        formTitle.innerText = "✏️ Edit Product";
-        submitBtn.innerText = "Update Product";
-
-        try {
-          const res = await fetch(`http://localhost:5000/farmer/getProduct/${productId}`);
-          const data = await res.json();
-
-          if (res.ok && data.product) {
-            document.getElementById("name").value = data.product.name;
-            document.getElementById("category").value = data.product.category;
-            document.getElementById("price").value = data.product.price;
-            document.getElementById("quantity").value = data.product.quantity;
-            document.getElementById("location").value = data.product.location;
-
-            if (data.product.image) {
-              preview.src = data.product.image.startsWith('http') ? data.product.image : "http://localhost:5000" + data.product.image;
-              preview.style.display = "block";
-            }
-          }
-        } catch (err) {
-          console.error("Error fetching product for edit:", err);
-        }
+      // Attach farmerId from localStorage (if logged in)
+      const farmerId = localStorage.getItem("farmerId");
+      if (!farmerId) {
+        alert("⚠ Please login as a farmer to add products.");
+        return;
       }
+      formData.append("farmerId", farmerId);
 
-      addProductForm.addEventListener("submit", async function(e) {
-        e.preventDefault();
+      try {
+        const response = await fetch("http://localhost:5000/api/products", {
+          method: "POST",
+          body: formData
+        });
 
-        if(!farmerId){
-          messageEl.className = "error";
-          messageEl.innerText = "⚠️ Farmer ID not found. Please login first.";
-          return;
+        const data = await response.json();
+
+        if (response.ok && data.status === "success") {
+          alert("✅ Product added successfully!");
+          this.reset();
+        } else {
+          alert("❌ Failed to add product: " + (data.message || "Unknown error"));
         }
-
-        const formData = new FormData(addProductForm);
-
-        let apiUrl = productId 
-          ? `http://localhost:5000/farmer/updateProduct/${productId}`
-          : `http://localhost:5000/farmer/addProduct/${encodeURIComponent(farmerId)}`;
-
-        let method = productId ? "PUT" : "POST";
-
-        try {
-          submitBtn.disabled = true;
-          submitBtn.textContent = productId ? "Updating..." : "Adding...";
-
-          const response = await fetch(apiUrl, { method, body: formData });
-          const data = await response.json();
-
-          if (response.ok && data.status === "success") {
-            messageEl.className = "success";
-            messageEl.innerText = "✅ " + data.message;
-
-            if (data.filePath || data.path) {
-              preview.src = data.filePath.startsWith('http') ? data.filePath : "http://localhost:5000" + data.filePath;
-              preview.style.display = 'block';
-            }
-
-            if (!productId) addProductForm.reset(); // only reset on Add
-          } else {
-            messageEl.className = "error";
-            messageEl.innerText = "❌ " + (data.message || "Failed to save product.");
-          }
-        } catch (err) {
-          console.error("Error:", err);
-          messageEl.className = "error";
-          messageEl.innerText = "⚠️ Error connecting to server.";
-        } finally {
-          submitBtn.disabled = false;
-          submitBtn.textContent = productId ? "Update Product" : "Add Product";
-        }
-      });
+      } catch (err) {
+        console.error(err);
+        alert("⚠ Error connecting to server.");
+      }
     });
   </script>
 </body>
 </html>
+ 
