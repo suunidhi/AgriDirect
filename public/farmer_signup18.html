@@ -1,4 +1,4 @@
-<!DOCTYPE html>  
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -18,18 +18,17 @@
     nav ul li a:hover {color:#F4FFC3;}
 
     .form-container {
-      width:400px; margin:40px auto; background:white; padding:20px; border-radius:12px;
-      box-shadow:0 4px 12px rgba(0,0,0,0.1);
-      transition: transform 0.3s ease, background 0.3s ease;
-      position: relative;
+      width:460px; margin:40px auto; background:white; padding:25px;
+      border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1);
+      transition:transform 0.3s ease;
     }
-    .form-container:hover {
-      transform: scale(1.1);
+    .form-container:hover {transform: scale(1.05);}
+    h2 {text-align:center; color:#2e7d32; margin-bottom:20px;}
+    label {display:block; margin-top:12px; font-weight:bold;}
+    input, textarea, select {
+      width:100%; padding:10px; margin-top:5px; border:1px solid #ccc; border-radius:8px;
     }
-    
-    h2 {text-align:center; color:#2e7d32;}
-    label {display:block; margin-top:10px; font-weight:bold;}
-    input,textarea {width:100%; padding:10px; margin-top:5px; border:1px solid #ccc; border-radius:8px;}
+    input[type="file"] {padding:6px;}
     button {
       background:#2e7d32; color:white; border:none; padding:12px; width:100%;
       border-radius:10px; margin-top:15px; cursor:pointer; font-size:1rem;
@@ -38,22 +37,13 @@
     .error {color:red; font-size:0.9rem;}
     .link {text-align:center; margin-top:10px;}
 
-    /* Centered message div */
     #message {
-      display:none;
-      position:absolute;
-      top:50%;
-      left:50%;
-      transform:translate(-50%, -50%);
-      padding:15px 20px;
-      border-radius:10px;
-      font-weight:bold;
-      text-align:center;
-      z-index:1000;
+      display:none; position:fixed; top:50%; left:50%;
+      transform:translate(-50%, -50%); padding:20px; border-radius:10px;
+      font-weight:bold; text-align:center; z-index:1000;
     }
     #message.success {background:#d4edda; color:#155724;}
     #message.error {background:#f8d7da; color:#721c24;}
-    #okBtn {margin-top:10px; padding:5px 15px; font-weight:bold; border:none; border-radius:5px; cursor:pointer;}
 
     footer {
       background:white; color:#809D3C; padding:30px 20px; text-align:center;
@@ -69,7 +59,7 @@
 </head>
 <body>
 
-  <!-- Navbar (same as homepage) -->
+  <!-- Navbar -->
   <nav>
     <div class="logo">
       <video autoplay loop muted>
@@ -88,45 +78,74 @@
 
   <!-- Farmer Registration Form -->
   <div class="form-container">
-    <h2>Register as Farmer</h2>
+    <h2>Register as Verified Farmer</h2>
     <form id="farmerForm" enctype="multipart/form-data">
+
+      <!-- Basic Info -->
       <label>Full Name</label>
       <input type="text" name="name" required>
 
       <label>Farm Name</label>
       <input type="text" name="farmName" required>
 
-      <label>Location</label>
+      <label>Location / Village</label>
       <input type="text" name="location" required>
 
       <label>Email</label>
       <input type="email" name="email" required>
 
       <label>Mobile Number</label>
-      <input type="tel" id="fphone" name="mobile" pattern="[0-9]{10}" required placeholder="10-digit number">
+      <input type="tel" id="fphone" name="mobile" pattern="[0-9]{10}" placeholder="10-digit number" required>
       <div id="errorMsg" class="error"></div>
 
-      <label>Upload Farming Certificate</label>
-      <input type="file" name="certificate" accept=".pdf,.jpg,.jpeg,.png" required>
+      <!-- Document Uploads -->
+      <label>Aadhaar Number (UID)</label>
+      <input type="text" id="aadhaar" name="aadhaar" pattern="[0-9]{12}" maxlength="12" placeholder="12-digit Aadhaar number" required>
 
-      <label>Farming Experience (years)</label>
+      <label>Upload Aadhaar Card</label>
+      <input type="file" name="aadhaarFile" accept=".pdf,.jpg,.jpeg,.png" required>
+
+      <label>Upload PAN Card</label>
+      <input type="file" name="panFile" accept=".pdf,.jpg,.jpeg,.png" required>
+
+      <label>Land Ownership Proof (7/12 Utara / Khasra / Patta)</label>
+      <input type="file" name="landProof" accept=".pdf,.jpg,.jpeg,.png" required>
+
+      <label>Lease / Mutation Certificate (if tenant farmer)</label>
+      <input type="file" name="leaseProof" accept=".pdf,.jpg,.jpeg,.png">
+
+      <label>Recent Crop Insurance / Farmer ID</label>
+      <input type="file" name="farmerIDProof" accept=".pdf,.jpg,.jpeg,.png">
+
+      <label>Soil Health / Organic Certificate (optional)</label>
+      <input type="file" name="organicProof" accept=".pdf,.jpg,.jpeg,.png">
+
+      <!-- Farming Info -->
+      <label>Farming Experience (in years)</label>
       <input type="number" name="experience" min="0" required>
+
+      <label>Type of Farming</label>
+      <select name="farmingType" required>
+        <option value="">Select</option>
+        <option value="Natural/Organic">Natural / Organic</option>
+        <option value="Conventional">Conventional</option>
+        <option value="Both">Both</option>
+      </select>
 
       <label>Password</label>
       <input type="password" name="password" minlength="6" required>
 
-      <button type="submit">Register</button>
+      <button type="submit">Register Farmer</button>
     </form>
 
     <div class="link">Already registered? <a href="farmer_login18.html">Login here</a></div>
 
-    <!-- Centered message div with OK button -->
     <div id="message">
       <span id="messageText"></span>
     </div>
   </div>
-  
-  <!-- Footer (same as homepage) -->
+
+  <!-- Footer -->
   <footer>
     <div class="footer-container">
       <div class="footer-logo">
@@ -148,20 +167,17 @@
         <a href="#"><img src="image/youtube.png" alt="YouTube"></a>
       </div>
     </div>
-    <p class="footer-copy">&copy; 2025 Agridirect. All Rights Reserved.</p>
+    <p class="footer-copy">&copy; 2025 AgriDirect. All Rights Reserved.</p>
   </footer>
 
-  <!-- Validation and AJAX Submission Script -->
+  <!-- Script -->
   <script>
     const form = document.getElementById("farmerForm");
     const messageDiv = document.getElementById("message");
     const messageText = document.getElementById("messageText");
-    const okBtn = document.getElementById("okBtn");
 
     form.addEventListener("submit", async function(e){
       e.preventDefault();
-
-      // Phone validation
       let phone = document.getElementById("fphone").value;
       if(!/^\d{10}$/.test(phone)){
         document.getElementById("errorMsg").innerText = "Phone must be 10 digits!";
@@ -170,32 +186,24 @@
         document.getElementById("errorMsg").innerText = "";
       }
 
-      // Prepare form data
       const formData = new FormData(form);
-
-      // Send request to backend
       try {
         const res = await fetch("http://localhost:5000/farmer/register", {
           method: "POST",
           body: formData
         });
         const data = await res.json();
-
-        // Show message
         messageText.innerText = data.message;
-        messageDiv.className = data.status || "success"; // success or error
+        messageDiv.className = data.status || "success";
         messageDiv.style.display = "block";
-        // Automatically go to login page after 2 seconds
-      setTimeout(() => {
-        window.location.href = "farmer_login18.html";
-    }, 2000); // 2000ms = 2 seconds
 
+        if(data.status === "success"){
+          setTimeout(() => window.location.href = "farmer_login18.html", 2000);
+        }
       } catch(err){
         messageText.innerText = "Server error!";
         messageDiv.className = "error";
         messageDiv.style.display = "block";
-        okBtn.style.display = "inline-block";
-        okBtn.onclick = () => messageDiv.style.display = "none";
       }
     });
   </script>
