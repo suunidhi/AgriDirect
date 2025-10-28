@@ -3,25 +3,34 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Farmer Dashboard - AgriDirect</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>Add Product - AgriDirect</title>
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Montserrat', sans-serif;
       background-color: #f5f7f5;
       margin: 0;
       padding: 0;
     }
 
-    /* Navbar */
+    /* ✅ Navbar */
     nav {
-      height: 80px; 
+      width: 100%;
+      background-color: #5D8736;
+      padding: 15px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: #5D8736;
-      padding: 15px 30px;
       font-size: larger;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
     }
 
     .logo {
@@ -45,14 +54,11 @@
     nav ul {
       list-style: none;
       display: flex;
-      margin: 0;
-      padding: 0;
     }
 
     nav ul li {
       margin: 0 15px;
       padding: 7px;
-      position: relative; 
     }
 
     nav ul li a {
@@ -65,10 +71,50 @@
       color: #F4FFC3;
     }
 
-    /* Dashboard container */
+    /* ✅ Responsive Navbar */
+    @media (max-width: 700px) {
+      nav {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px 15px;
+      }
+      .logo {
+        margin-bottom: 10px;
+      }
+      nav ul {
+        flex-direction: column;
+        width: 100%;
+        display: none;
+        background: #5D8736;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        z-index: 999;
+      }
+      nav ul.show {
+        display: flex;
+      }
+      nav ul li {
+        margin: 10px 0;
+        padding: 10px 0;
+        width: 100%;
+        text-align: left;
+      }
+      .nav-toggle {
+        display: block;
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 28px;
+        cursor: pointer;
+        margin-left: auto;
+      }
+    }
+
+    /* ✅ Page Container */
     .container {
       max-width: 700px;
-      margin: 40px auto;
+      margin: 120px auto 40px;
       background: #fff;
       padding: 30px;
       border-radius: 12px;
@@ -108,6 +154,11 @@
       margin-bottom: 15px;
     }
 
+    h3 {
+      color: #2e7d32;
+      margin-top: 25px;
+    }
+
     button {
       background: #5D8736;
       color: #fff;
@@ -118,44 +169,107 @@
       font-size: 16px;
       width: 100%;
       font-weight: bold;
-      transition: background 0.3s ease;
-      margin-bottom: 10px;
+      transition: background 0.3s;
     }
 
     button:hover {
       background: #4a6b2b;
     }
 
-    .success { color: green; text-align: center; margin-top: 15px; }
-    .error { color: red; text-align: center; margin-top: 15px; }
-    .preview { display: block; margin: 10px auto; max-width: 200px; border-radius: 10px; }
+    /* ✅ Footer */
+    footer {
+      background: white;
+      color: #809D3C;
+      padding: 30px 0;
+      text-align: center;
+      width: 100%;
+      margin-top: 40px;
+      border-top: 2px solid #5D8736;
+    }
+
+    .footer-container {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin: auto;
+      padding: 10px 20px;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      font-size: 22px;
+      font-weight: bold;
+      color: #5D8736;
+    }
+
+    .footer-logo video {
+      width: 50px;
+      height: 50px;
+      margin-right: 10px;
+      border-radius: 5px;
+    }
+
+    .footer-contact, .footer-social {
+      text-align: center;
+    }
+
+    .footer-social a img {
+      width: 30px;
+      margin: 0 10px;
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .footer-social a img:hover {
+      transform: scale(1.2);
+    }
+
+    .footer-copy {
+      margin-top: 15px;
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    @media (max-width: 500px) {
+      .footer-container {
+        flex-direction: column;
+        gap: 20px;
+      }
+      .container {
+        margin: 100px 20px;
+        padding: 20px;
+      }
+    }
   </style>
 </head>
 <body>
-  <!-- Navbar -->
+
+  <!-- ✅ Navbar -->
   <nav>
-      <div class="logo">
-          <video autoplay loop muted>
-              <source src="image/agridirect.mp4" type="video/mp4">
-          </video>
-          <span class="logo-text">AgriDirect</span>
-      </div>
-      <ul>
-          <li><a href="shared_homepage.html">HOME</a></li>
-          <li><a href="marketplace.html">MARKETPLACE</a></li>
-          <li><a href="qr-scan.html">SCAN QR CODE</a></li>
-          <li><a href="about_us.html">ABOUT US </a></li>
-          <li><a href="role.html">LOGIN/SIGN UP</a></li>
-      </ul>
+    <div class="logo">
+      <video autoplay loop muted>
+        <source src="image/agridirect.mp4" type="video/mp4">
+      </video>
+      <span class="logo-text">AgriDirect</span>
+    </div>
+    <ul>
+      <li><a href="shared_homepage.html">HOME</a></li>
+      <li><a href="marketplace.html">MARKETPLACE</a></li>
+      <li><a href="qr-scan.html">SCAN QR CODE</a></li>
+      <li><a href="about_us.html">ABOUT US</a></li>
+      <li><a href="role.html">LOGIN/SIGN UP</a></li>
+    </ul>
   </nav>
 
-  <!-- Dashboard Content -->
+  <!-- ✅ Main Content -->
   <div class="container">
-    <h2 id="formTitle">🛒 Add New Product</h2>
+    <h2>🛒 Add New Product</h2>
     <form id="addProductForm" enctype="multipart/form-data">
       
       <label for="image">Product Image</label>
-      <input type="file" id="image" name="image" accept=".jpg, .jpeg, .png">
+      <input type="file" id="image" name="image" accept=".jpg, .jpeg, .png" required>
       <p class="note">Only JPG or PNG formats allowed.</p>
 
       <label for="name">Product Name</label>
@@ -167,7 +281,7 @@
         <option value="fruits">🍎 Fruits</option>
         <option value="vegetables">🥕 Vegetables</option>
         <option value="grains">🌾 Grains</option>
-        <option value="others">🛍️ Others</option>
+        <option value="others">🛍 Others</option>
       </select>
 
       <label for="price">Price per Unit (₹/kg)</label>
@@ -179,103 +293,100 @@
       <label for="location">Location</label>
       <input type="text" id="location" name="location" placeholder="Enter location" required>
 
-      <button type="submit" id="submitBtn">Add Product</button>
+      <h3>🌱 Crop Quality Details</h3>
+
+      <label for="harvestDate">Harvest Date</label>
+      <input type="date" id="harvestDate" name="harvestDate" required>
+
+      <label for="moisture">Moisture Content (%)</label>
+      <input type="number" step="0.1" id="moisture" name="moisture" placeholder="Enter moisture content" required>
+
+      <label for="protein">Protein Content (%)</label>
+      <input type="number" step="0.1" id="protein" name="protein" placeholder="Enter protein content" required>
+
+      <label for="pesticide">Pesticide Residue (mg/kg)</label>
+      <input type="number" step="0.01" id="pesticide" name="pesticide" placeholder="Enter pesticide residue" required>
+
+      <label for="ph">Soil pH</label>
+      <input type="number" step="0.1" id="ph" name="ph" placeholder="Enter soil pH" required>
+
+      <label for="labReport">Lab Report (PDF)</label>
+      <input type="file" id="labReport" name="labReport" accept=".pdf">
+
+      <button type="submit">Add Product</button>
     </form>
-
-    <!-- View Products Button -->
-    <button type="button" onclick="window.location.href='marketplacefarmer.html'">View My Products</button>
-
-    <!-- Success / Error Messages -->
-    <div id="message"></div>
-    <!-- Preview Uploaded Image -->
-    <img id="preview" class="preview" style="display:none;">
   </div>
 
+  <!-- ✅ Footer -->
+  <footer>
+    <div class="footer-container">
+      <div class="footer-logo">
+        <video autoplay loop muted playsinline>
+          <source src="image/logo.mp4" type="video/mp4">
+        </video>
+        <span>AgriDirect</span>
+      </div>
+
+      <div class="footer-contact">
+        <h3>Contact Us</h3>
+        <p>Email: support@agriDirect.com</p>
+        <p>Phone: +91 10101 01010</p>
+      </div>
+
+      <div class="footer-social">
+        <h3>Follow Us</h3>
+        <a href="#"><img src="image/linkedin.png" alt="LinkedIn"></a>
+        <a href="#"><img src="image/twitter.png" alt="Twitter"></a>
+        <a href="#"><img src="image/instagram.png" alt="Instagram"></a>
+        <a href="#"><img src="image/youtube.png" alt="YouTube"></a>
+      </div>
+    </div>
+    <p class="footer-copy">&copy; 2025 AgriDirect. All Rights Reserved.</p>
+  </footer>
+
   <script>
-    document.addEventListener("DOMContentLoaded", async function () {
-      const addProductForm = document.getElementById("addProductForm");
-      const messageEl = document.getElementById("message");
-      const preview = document.getElementById("preview");
-      const submitBtn = document.getElementById("submitBtn");
-      const formTitle = document.getElementById("formTitle");
-
-      const farmerId = localStorage.getItem("farmerId"); 
-      const urlParams = new URLSearchParams(window.location.search);
-      const productId = urlParams.get("productId"); 
-
-      // If productId exists → Editing mode
-      if (productId) {
-        formTitle.innerText = "✏️ Edit Product";
-        submitBtn.innerText = "Update Product";
-
-        try {
-          const res = await fetch(`http://localhost:5000/farmer/getProduct/${productId}`);
-          const data = await res.json();
-
-          if (res.ok && data.product) {
-            document.getElementById("name").value = data.product.name;
-            document.getElementById("category").value = data.product.category;
-            document.getElementById("price").value = data.product.price;
-            document.getElementById("quantity").value = data.product.quantity;
-            document.getElementById("location").value = data.product.location;
-
-            if (data.product.image) {
-              preview.src = data.product.image.startsWith('http') ? data.product.image : "http://localhost:5000" + data.product.image;
-              preview.style.display = "block";
-            }
-          }
-        } catch (err) {
-          console.error("Error fetching product for edit:", err);
-        }
+    // ✅ Navbar Toggle
+    document.addEventListener("DOMContentLoaded", function() {
+      const navToggle = document.getElementById('nav-toggle');
+      const navUl = document.querySelector('nav ul');
+      if (navToggle) {
+        navToggle.addEventListener('click', function() {
+          navUl.classList.toggle('show');
+        });
       }
+    });
 
-      addProductForm.addEventListener("submit", async function(e) {
-        e.preventDefault();
+    // ✅ Product Form Submission
+    document.getElementById("addProductForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
 
-        if(!farmerId){
-          messageEl.className = "error";
-          messageEl.innerText = "⚠️ Farmer ID not found. Please login first.";
-          return;
-        }
+      const formData = new FormData(this);
+      const farmerId = localStorage.getItem("farmerId");
+      if (!farmerId) {
+        alert("⚠ Please login as a farmer to add products.");
+        return;
+      }
+      formData.append("farmerId", farmerId);
 
-        const formData = new FormData(addProductForm);
-
-        let apiUrl = productId 
-          ? `http://localhost:5000/farmer/updateProduct/${productId}`
-          : `http://localhost:5000/farmer/addProduct/${encodeURIComponent(farmerId)}`;
-
-        let method = productId ? "PUT" : "POST";
-
-        try {
-          submitBtn.disabled = true;
-          submitBtn.textContent = productId ? "Updating..." : "Adding...";
-
-          const response = await fetch(apiUrl, { method, body: formData });
-          const data = await response.json();
-
-          if (response.ok && data.status === "success") {
-            messageEl.className = "success";
-            messageEl.innerText = "✅ " + data.message;
-
-            if (data.filePath || data.path) {
-              preview.src = data.filePath.startsWith('http') ? data.filePath : "http://localhost:5000" + data.filePath;
-              preview.style.display = 'block';
-            }
-
-            if (!productId) addProductForm.reset(); // only reset on Add
-          } else {
-            messageEl.className = "error";
-            messageEl.innerText = "❌ " + (data.message || "Failed to save product.");
-          }
-        } catch (err) {
-          console.error("Error:", err);
-          messageEl.className = "error";
-          messageEl.innerText = "⚠️ Error connecting to server.";
-        } finally {
-          submitBtn.disabled = false;
-          submitBtn.textContent = productId ? "Update Product" : "Add Product";
-        }
+      try {
+        const response = await fetch(`http://localhost:5000/farmer/addProduct/${farmerId}`, {
+        method: "POST",
+        body: formData
       });
+
+
+        const data = await response.json();
+
+        if (response.ok && data.status === "success") {
+          alert("✅ Product added successfully!");
+          this.reset();
+        } else {
+          alert("❌ Failed to add product: " + (data.message || "Unknown error"));
+        }
+      } catch (err) {
+        console.error(err);
+        alert("⚠ Error connecting to server.");
+      }
     });
   </script>
 </body>

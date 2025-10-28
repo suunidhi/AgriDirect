@@ -26,16 +26,6 @@
       border: 1px solid #ccc; border-radius: 8px;
     }
     .price-box { margin-top: 10px; font-weight: bold; color: #28a745; text-align: left; }
-    .option {
-      margin: 12px 0;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      cursor: pointer;
-      text-align: left;
-    }
-    .option:hover { background: #f0f0f0; }
-    .details { display: none; margin-top: 10px; }
     button {
       background: #28a745;
       color: #fff;
@@ -48,7 +38,6 @@
       margin-top: 15px;
     }
     button:hover { background: #218838; }
-    img { width: 150px; margin-top: 10px; }
 
     /* Navbar */
     nav {
@@ -131,6 +120,39 @@
       from { opacity: 0; transform: scale(0.9); }
       to   { opacity: 1; transform: scale(1); }
     }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 400px;
+      position: relative;
+    }
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 20px;
+      cursor: pointer;
+      color: red;
+    }
+    .modal-content img {
+      width: 200px;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
@@ -172,37 +194,20 @@
       <label>Delivery Address:</label>
       <textarea id="address" name="address" rows="3" required></textarea>
 
-      <!-- Payment Options -->
       <h3>Select Payment Method</h3>
-      <div class="option" onclick="showDetails('card')">
-        💳 Credit/Debit Card
-        <div id="card" class="details">
-          <input type="text" placeholder="Card Number">
-          <input type="text" placeholder="MM/YY">
-          <input type="text" placeholder="CVV">
-          <input type="text" placeholder="Card Holder Name">
-          <button type="button" onclick="payNow('card')">Pay with Card</button>
-        </div>
-      </div>
-
-      <div class="option" onclick="showDetails('upi')">
-        📱 UPI / QR Code
-        <div id="upi" class="details">
-          <p>Scan this QR to pay:</p>
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=yourupi@bank" alt="QR Code">
-          <input type="text" placeholder="Enter UPI ID">
-          <button type="button" onclick="payNow('upi')">Pay with UPI</button>
-        </div>
-      </div>
-
-      <div class="option" onclick="showDetails('cod')">
-        🚚 Cash on Delivery
-        <div id="cod" class="details">
-          <p>You will pay in cash when product is delivered.</p>
-          <button type="button" onclick="payNow('cod')">Confirm COD</button>
-        </div>
-      </div>
+      <button type="button" onclick="payNow('cod')">🚚 Cash on Delivery</button>
+      <button type="button" onclick="openQRModal()">📱 Pay via QR Code</button>
     </form>
+  </div>
+
+  <!-- QR Modal -->
+  <div id="qrModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeQRModal()">&times;</span>
+      <h3>Scan Farmer's QR to Pay</h3>
+      <img id="farmerQR" src="" alt="Farmer QR Code">
+      <button onclick="confirmQRPayment()">✅ Payment Done</button>
+    </div>
   </div>
 
   <!-- Success Section -->
@@ -261,11 +266,6 @@
       totalPriceSpan.innerText = (price || 0) * qty;
     });
 
-    function showDetails(id) {
-      document.querySelectorAll('.details').forEach(div => div.style.display = 'none');
-      document.getElementById(id).style.display = 'block';
-    }
-
     async function payNow(method) {
       if (!consumerId) {
         alert("⚠️ Please login as consumer first!");
@@ -304,6 +304,39 @@
         console.error(err);
         alert("⚠️ Server error. Make sure backend is running.");
       }
+    }
+
+    // Fetch and open QR modal
+    async function openQRModal() {
+  if (!farmerId) {
+    alert("Farmer not found for this product!");
+    return;
+  }
+
+  try {
+    const res = await fetch(`http://localhost:5000/farmer/${farmerId}/qr`);
+    const data = await res.json();
+
+    if (data.qrCodeUrl) {
+      document.getElementById("farmerQR").src = `http://localhost:5000${data.qrCodeUrl}`;
+      document.getElementById("qrModal").style.display = "flex";
+    } else {
+      alert("QR not available for this farmer.");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Error fetching farmer QR!");
+  }
+}
+
+
+    function closeQRModal() {
+      document.getElementById("qrModal").style.display = "none";
+    }
+
+    function confirmQRPayment() {
+      closeQRModal();
+      payNow('qr');
     }
   </script>
 </body>
