@@ -193,6 +193,18 @@
       font-size: 14px;
       opacity: 0.8;
     }
+
+    /* ✅ Fix Buy Now button not clickable */
+    .product-card button {
+      position: relative;
+      z-index: 9999;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+    .product-card.is-flipped .btn-buy,
+    .product-card.is-flipped .btn-sqr {
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
@@ -283,6 +295,7 @@ async function loadProducts() {
                     onclick="event.stopPropagation(); redirectToCheckout('${p._id}', '${p.farmerId?._id}', '${p.name}', ${p.price})">
                     🛒 Buy Now
                   </button>
+
                   <button class="btn-sqr"
                     onclick="event.stopPropagation(); showQR(this, '${productData}')">
                     Verify Farmer
@@ -316,6 +329,7 @@ async function loadProducts() {
 
 loadProducts();
 
+// ✅ FIXED BUY BUTTON FUNCTION
 function redirectToCheckout(productId, farmerId, name, price) {
   const consumerId = localStorage.getItem("consumerId");
   const isLoggedIn = consumerId && consumerId.trim() !== "";
@@ -326,10 +340,13 @@ function redirectToCheckout(productId, farmerId, name, price) {
   if (!isLoggedIn) {
     alert("Please sign up or login before purchasing.");
     window.location.href = `consumer_signup18.html?productId=${encodeURIComponent(productId)}&farmerId=${encodeURIComponent(farmerId)}&name=${encodeURIComponent(name)}&price=${encodeURIComponent(price)}`;
+  } else {
+    // ✅ Redirect logged-in consumer to checkout/payment page
+    window.location.href = `checkout.html?productId=${encodeURIComponent(productId)}&farmerId=${encodeURIComponent(farmerId)}&name=${encodeURIComponent(name)}&price=${encodeURIComponent(price)}`;
   }
 }
 
-// ✅ Updated QR Logic: fetch QR from backend instead of generating
+// ✅ QR Logic
 function showQR(button, encodedProduct) {
   const product = JSON.parse(decodeURIComponent(encodedProduct));
   const card = button.closest(".product-card");
@@ -349,8 +366,6 @@ function showQR(button, encodedProduct) {
       img.style.borderRadius = "10px";
       img.style.padding = "5px";
       img.style.background = "#fff";
-
-      // ✅ Optional: click QR to open in new tab
       img.style.cursor = "pointer";
       img.onclick = () => window.open(img.src, "_blank");
 
@@ -366,6 +381,30 @@ function unflipCard(button) {
   const card = button.closest(".product-card");
   card.classList.remove("is-flipped");
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const loginMenuItem = document.querySelector("nav ul li a[href='role.html']");
+
+  // Check login status
+  const farmerId = localStorage.getItem("farmerId");
+  const consumerId = localStorage.getItem("consumerId");
+
+  if (farmerId || consumerId) {
+    // ✅ Change "Login/Sign Up" → "Logout"
+    loginMenuItem.textContent = "LOGOUT";
+    loginMenuItem.href = "#";
+    loginMenuItem.addEventListener("click", () => {
+      // Confirm logout
+      if (confirm("Are you sure you want to log out?")) {
+        localStorage.clear(); // Clear all session info
+        alert("Logged out successfully!");
+        window.location.href = "shared_homepage.html"; // Redirect to homepage
+      }
+    });
+  }
+});
+
+
 </script>
 
 </body>

@@ -148,6 +148,28 @@
         alert("⚠️ Error connecting to server.");
       }
     });
+    document.addEventListener("DOMContentLoaded", () => {
+  const loginMenuItem = document.querySelector("nav ul li a[href='role.html']");
+
+  // Check login status
+  const farmerId = localStorage.getItem("farmerId");
+  const consumerId = localStorage.getItem("consumerId");
+
+  if (farmerId || consumerId) {
+    // ✅ Change "Login/Sign Up" → "Logout"
+    loginMenuItem.textContent = "LOGOUT";
+    loginMenuItem.href = "#";
+    loginMenuItem.addEventListener("click", () => {
+      // Confirm logout
+      if (confirm("Are you sure you want to log out?")) {
+        localStorage.clear(); // Clear all session info
+        alert("Logged out successfully!");
+        window.location.href = "shared_homepage.html"; // Redirect to homepage
+      }
+    });
+  }
+});
+
   </script>
 </body>
 </html>

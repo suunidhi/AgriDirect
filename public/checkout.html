@@ -8,11 +8,11 @@
       font-family: Arial, sans-serif; 
       background: #f6fff6; 
       margin: 0; 
-      padding: 0;
+      padding: 120px 0 0 0; /* ✅ Added top padding to fix overlap */
     }
     .checkout-container, .success-container {
       max-width: 600px; 
-      margin: 120px auto 0 auto; 
+      margin: 0 auto; /* ✅ Removed large top margin */
       background: #fff; 
       padding: 25px;
       border-radius: 12px; 
@@ -306,30 +306,27 @@
       }
     }
 
-    // Fetch and open QR modal
     async function openQRModal() {
-  if (!farmerId) {
-    alert("Farmer not found for this product!");
-    return;
-  }
+      if (!farmerId) {
+        alert("Farmer not found for this product!");
+        return;
+      }
 
-  try {
-const res = await fetch(`http://localhost:5000/farmer/${farmerId}/qr`);
-const data = await res.json();
+      try {
+        const res = await fetch(`http://localhost:5000/farmer/${farmerId}/qr`);
+        const data = await res.json();
 
-if (data.qrUrl) { // ✅ changed this line
-  document.getElementById("farmerQR").src = `http://localhost:5000${data.qrUrl}`;
-  document.getElementById("qrModal").style.display = "flex";
-} else {
-  alert("QR not available for this farmer.");
-}
-
-  } catch (err) {
-    console.error(err);
-    alert("Error fetching farmer QR!");
-  }
-}
-
+        if (data.qrUrl) {
+          document.getElementById("farmerQR").src = `http://localhost:5000${data.qrUrl}`;
+          document.getElementById("qrModal").style.display = "flex";
+        } else {
+          alert("QR not available for this farmer.");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Error fetching farmer QR!");
+      }
+    }
 
     function closeQRModal() {
       document.getElementById("qrModal").style.display = "none";
@@ -339,6 +336,28 @@ if (data.qrUrl) { // ✅ changed this line
       closeQRModal();
       payNow('qr');
     }
+
+    document.addEventListener("DOMContentLoaded", () => {
+  const loginMenuItem = document.querySelector("nav ul li a[href='role.html']");
+
+  // Check login status
+  const farmerId = localStorage.getItem("farmerId");
+  const consumerId = localStorage.getItem("consumerId");
+
+  if (farmerId || consumerId) {
+    // ✅ Change "Login/Sign Up" → "Logout"
+    loginMenuItem.textContent = "LOGOUT";
+    loginMenuItem.href = "#";
+    loginMenuItem.addEventListener("click", () => {
+      // Confirm logout
+      if (confirm("Are you sure you want to log out?")) {
+        localStorage.clear(); // Clear all session info
+        alert("Logged out successfully!");
+        window.location.href = "shared_homepage.html"; // Redirect to homepage
+      }
+    });
+  }
+});
   </script>
 </body>
 </html>

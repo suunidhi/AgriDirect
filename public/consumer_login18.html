@@ -152,29 +152,31 @@
       messageDiv.className = data.status || "success";
       messageDiv.style.display = "block";
 
-      if ((data.status && data.status.toLowerCase() === "success") || data.success) {
-        if (data.consumer) {
-          // ✅ Save consumer details to localStorage
-          localStorage.setItem("consumerId", data.consumer._id);
-          localStorage.setItem("consumerName", data.consumer.name);
-          localStorage.setItem("consumerEmail", data.consumer.email);
-          localStorage.setItem("consumerMobile", data.consumer.mobile || "");
+if ((data.status && data.status.toLowerCase() === "success") || data.success) {
+  if (data.consumer) {
+    // ✅ Store login session info
+    localStorage.setItem("userRole", "consumer");
+    localStorage.setItem("consumerId", data.consumer._id);
+    localStorage.setItem("consumerName", data.consumer.name);
+    localStorage.setItem("consumerEmail", data.consumer.email);
+    localStorage.setItem("consumerMobile", data.consumer.mobile || "");
 
-          // ✅ Get checkout data (if any)
-          const checkoutProduct = JSON.parse(localStorage.getItem("checkoutProduct") || "{}");
+    // ✅ Get checkout data (if any)
+    const checkoutProduct = JSON.parse(localStorage.getItem("checkoutProduct") || "{}");
 
-          // Hide popup before redirect
-          messageDiv.style.display = "none";
+    // Hide popup before redirect
+    messageDiv.style.display = "none";
 
-          if (checkoutProduct && checkoutProduct.productId) {
-            // ✅ Redirect to checkout with all details
-            window.location.href = `checkout.html?productId=${encodeURIComponent(checkoutProduct.productId)}&farmerId=${encodeURIComponent(checkoutProduct.farmerId)}&name=${encodeURIComponent(checkoutProduct.name)}&price=${encodeURIComponent(checkoutProduct.price)}&consumerId=${encodeURIComponent(data.consumer._id)}`;
-          } else {
-            // ✅ Redirect to dashboard if no product in checkout
-            window.location.href = "consumer_dashboard.html";
-          }
-        }
-      }
+    if (checkoutProduct && checkoutProduct.productId) {
+      // ✅ Redirect to checkout with all details
+      window.location.href = `checkout.html?productId=${encodeURIComponent(checkoutProduct.productId)}&farmerId=${encodeURIComponent(checkoutProduct.farmerId)}&name=${encodeURIComponent(checkoutProduct.name)}&price=${encodeURIComponent(checkoutProduct.price)}&consumerId=${encodeURIComponent(data.consumer._id)}`;
+    } else {
+      // ✅ Redirect to dashboard if no product in checkout
+      window.location.href = "consumer_dashboard.html";
+    }
+  }
+}
+
       else {
         okBtn.style.display = "inline-block";
         okBtn.onclick = function(){ messageDiv.style.display = "none"; };

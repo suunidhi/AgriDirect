@@ -285,9 +285,26 @@ app.post("/consumer/login", async (req, res) => {
     res.json({ success: false, message: "Server error" });
   }
 });
+// ✅ Get all products by farmerId
+app.get("/farmer/getProducts/:farmerId", async (req, res) => {
+  try {
+    const { farmerId } = req.params;
 
+    if (!mongoose.Types.ObjectId.isValid(farmerId)) {
+      return res.json({ status: "error", message: "Invalid Farmer ID" });
+    }
 
+    const products = await Product.find({ farmerId });
 
+    res.json({
+      status: "success",
+      products,
+    });
+  } catch (error) {
+    console.error("Get Products Error:", error);
+    res.json({ status: "error", message: "Error fetching products" });
+  }
+});
 // Get all products
 app.get("/products", async (req, res) => {
   try {
@@ -298,6 +315,148 @@ app.get("/products", async (req, res) => {
     res.json({ status: "error", message: "Error fetching all products" });
   }
 });
+// ✅ Update product
+app.put("/farmer/updateProduct/:id", upload.single("image"), async (req, res) => {
+  try {
+    const { name, category, price, quantity, location } = req.body;
+    const productId = req.params.id;
+
+    const numericPrice = parseFloat(price);
+    const numericQuantity = parseFloat(quantity);
+    if (isNaN(numericPrice) || isNaN(numericQuantity)) {
+      return res.json({ status: "error", message: "Price and Quantity must be numbers" });
+    }
+
+    const updateData = { name, category, price: numericPrice, quantity: numericQuantity, location };
+    if (req.file) updateData.image = "/uploads/" + req.file.filename;
+
+    const updatedProduct = await Product.findByIdAndUpdate(productId, updateData, { new: true });
+    if (!updatedProduct) {
+      return res.json({ status: "error", message: "Product not found" });
+    }
+
+    res.json({
+      status: "success",
+      message: "Product updated successfully!",
+      filePath: updatedProduct.image,
+    });
+  } catch (err) {
+    console.error("Update Product Error:", err);
+    res.status(500).json({ status: "error", message: "Error updating product" });
+  }
+});
+
+// ✅ Delete product
+app.delete("/farmer/deleteProduct/:id", async (req, res) => {
+  try {
+    await Product.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: "Product deleted" });
+  } catch (err) {
+    res.status(500).json({ error: "Error deleting product" });
+  }
+});
+
+// ------------------ ORDER ROUTES ------------------
+// ✅ Place Order (fetch consumer details automatically)
+app.post("/orders", async (req, res) => {
+  try {
+    console.log("📦 Incoming Order Request:", req.body);
+
+    const {
+      productId,
+      farmerId,
+      consumerId,
+      productName,
+      unitPrice,
+      quantity,
+      totalPrice,
+      address,
+      paymentMethod
+    } = req.body;
+
+    const consumer = await Consumer.findById(consumerId);
+    if (!consumer) {
+      console.log("❌ Invalid Consumer ID:", consumerId);
+      return res.status(400).json({ success: false, message: "Invalid Consumer ID" });
+    }
+
+    const order = new Order({
+      productId,
+      farmerId,
+      consumerId,
+      consumerName: consumer.name,
+      consumerEmail: consumer.email,
+      consumerMobile: consumer.mobile,
+      productName,
+      unitPrice,
+      quantity,
+      totalPrice,
+      address,
+      paymentMethod,
+    });
+
+    await order.save();
+    console.log("✅ Order saved successfully:", order);
+
+    res.json({ success: true, message: "Order placed successfully!" });
+  } catch (err) {
+    console.error("❌ Order Error:", err.message, err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// ✅ Get orders by consumerId (support query param and param)
+app.get("/orders", async (req, res) => {
+  try {
+    const consumerId = req.query.consumerId;
+    if (!consumerId) {
+      return res.status(400).json({ success: false, message: "consumerId is required" });
+    }
+
+    const orders = await Order.find({ consumerId });
+    res.json({ success: true, orders });
+  } catch (err) {
+    console.error("Get Orders Error:", err);
+    res.status(500).json({ success: false, message: "Error fetching orders" });
+  }
+});
+
+
+// ✅ Get orders by farmerId
+app.get("/farmer/orders/:farmerId", async (req, res) => {
+  try {
+    const { farmerId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(farmerId)) {
+      return res.json({ success: false, message: "Invalid Farmer ID" });
+    }
+
+    const orders = await Order.find({ farmerId })
+      .populate("consumerId", "name email mobile")
+      .populate("productId", "name price");
+
+    res.json({ success: true, orders });
+  } catch (err) {
+    console.error("Get Farmer Orders Error:", err);
+    res.status(500).json({ success: false, message: "Error fetching farmer orders" });
+  }
+});
+app.get("/farmer/:id/qr", async (req, res) => {
+  try {
+    const farmer = await Farmer.findById(req.params.id);
+    if (!farmer || !farmer.qrCode)
+      return res.json({ success: false, message: "QR not found" });
+
+    res.json({
+      success: true,
+      qrUrl: `/uploads/${farmer.qrCode}`, // ✅ renamed
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
 
 // Get QR
 app.get("/product/:id/qr", async (req, res) => {
