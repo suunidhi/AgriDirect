@@ -260,34 +260,32 @@ app.post("/consumer/register", async (req, res) => {
   }
 });
 // ✅ Consumer Login Route
+// ✅ Consumer Login (consistent with success:true/false)
 app.post("/consumer/login", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { name, email, password } = req.body;
 
-    // Find consumer by email
-    const consumer = await Consumer.findOne({ email });
-    if (!consumer) {
-      return res.json({ status: "error", message: "Invalid email or password" });
-    }
+    const consumer = await Consumer.findOne({ name, email });
+    if (!consumer) return res.json({ success: false, message: "Invalid name, email, or password" });
 
-    // Compare passwords
     const isMatch = await bcrypt.compare(password, consumer.password);
-    if (!isMatch) {
-      return res.json({ status: "error", message: "Invalid email or password" });
-    }
+    if (!isMatch) return res.json({ success: false, message: "Invalid name, email, or password" });
 
-    // Success
     res.json({
-      status: "success",
+      success: true,
       message: "Login successful",
-      consumerId: consumer._id.toString(),
-      name: consumer.name,
+      consumer: {
+        _id: consumer._id.toString(),
+        name: consumer.name,
+        email: consumer.email,
+      },
     });
   } catch (error) {
-    console.error("❌ Consumer Login Error:", error);
-    res.status(500).json({ status: "error", message: "Server error" });
+    console.error(error);
+    res.json({ success: false, message: "Server error" });
   }
 });
+
 
 
 // Get all products
