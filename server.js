@@ -15,6 +15,9 @@ app.use(cors());
 // ✅ Make uploads folder public
 app.use("/uploads", express.static("uploads"));
 
+// ✅ NEW — Make uploads/qrs folder public too
+app.use("/uploads/qrs", express.static(path.join(process.cwd(), "uploads/qrs")));
+
 // ------------------ DB CONNECTION ------------------
 mongoose.connect("mongodb://127.0.0.1:27017/agriDirect", {
   useNewUrlParser: true,
@@ -34,7 +37,6 @@ const farmerSchema = new mongoose.Schema({
   certificate: String,
   qrCode: String,
 });
-
 const Farmer = mongoose.model("Farmer", farmerSchema);
 
 const consumerSchema = new mongoose.Schema({
@@ -59,7 +61,7 @@ const productSchema = new mongoose.Schema({
   pesticideResidue: Number,
   soilPh: Number,
   labReport: String,
-  qrPath: String, // path to QR image
+  qrPath: String,
 });
 const Product = mongoose.model("Product", productSchema);
 
@@ -138,65 +140,107 @@ app.post("/farmer/login", async (req, res) => {
 });
 
 // Add Product + QR Generation
-app.post("/farmer/addProduct/:farmerId", upload.fields([
-  { name: "image", maxCount: 1 },
-  { name: "labReport", maxCount: 1 }
-]), async (req, res) => {
+app.post(
+  "/farmer/addProduct/:farmerId",
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "labReport", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
+      const { farmerId } = req.params;
+      const {
+        name,
+        category,
+        price,
+        quantity,
+        location,
+        harvestDate,
+        moisture,
+        protein,
+        pesticide,
+        ph,
+      } = req.body;
+
+      if (!mongoose.Types.ObjectId.isValid(farmerId))
+        return res.json({ status: "error", message: "Invalid Farmer ID" });
+
+      const farmer = await Farmer.findById(farmerId);
+      if (!farmer)
+        return res.json({ status: "error", message: "Farmer not found" });
+
+      if (!req.files["image"])
+        return res.json({ status: "error", message: "Product image required" });
+
+      const numericPrice = parseFloat(price) || 0;
+      const numericQuantity = parseFloat(quantity) || 0;
+      const numericMoisture = parseFloat(moisture) || 0;
+      const numericProtein = parseFloat(protein) || 0;
+      const numericPesticide = parseFloat(pesticide) || 0;
+      const numericPh = parseFloat(ph) || 0;
+
+      const qrDir = path.join(process.cwd(), "uploads/qrs");
+      if (!fs.existsSync(qrDir)) fs.mkdirSync(qrDir, { recursive: true });
+
+      const product = new Product({
+        farmerId,
+        name,
+        category,
+        price: numericPrice,
+        quantity: numericQuantity,
+        location,
+        image: `/uploads/${req.files["image"][0].filename}`,
+        harvestDate: harvestDate ? new Date(harvestDate) : null,
+        moisture: numericMoisture,
+        protein: numericProtein,
+        pesticideResidue: numericPesticide,
+        soilPh: numericPh,
+        labReport: req.files["labReport"]
+          ? `/uploads/${req.files["labReport"][0].filename}`
+          : null,
+      });
+
+      await product.save();
+
+      const serverUrl = "http://localhost:5000";
+      const qrUrl = `${serverUrl}/product/${product._id}/view`;
+      const qrFileName = `${product._id}-authQR.png`;
+      const qrFullPath = path.join(qrDir, qrFileName);
+
+      await QRCode.toFile(qrFullPath, qrUrl);
+
+      product.qrPath = `/uploads/qrs/${qrFileName}`;
+      await product.save();
+
+      console.log("✅ QR generated for:", product.name, "→", product.qrPath);
+
+      res.json({
+        status: "success",
+        message: "Product added successfully with QR!",
+        product,
+      });
+    } catch (error) {
+      console.error("❌ Add Product Error:", error);
+      res.json({ status: "error", message: "Error adding product" });
+    }
+  }
+);
+// ✅ Check if consumer email already exists
+app.post("/consumer/check-email", async (req, res) => {
   try {
-    const { farmerId } = req.params;
-    const { name, category, price, quantity, location, harvestDate, moisture, protein, pesticide, ph } = req.body;
-
-    if (!mongoose.Types.ObjectId.isValid(farmerId)) return res.json({ status: "error", message: "Invalid Farmer ID" });
-
-    const farmer = await Farmer.findById(farmerId);
-    if (!farmer) return res.json({ status: "error", message: "Farmer not found" });
-    if (!req.files["image"]) return res.json({ status: "error", message: "Product image required" });
-
-    const numericPrice = parseFloat(price);
-    const numericQuantity = parseFloat(quantity);
-    const numericMoisture = parseFloat(moisture);
-    const numericProtein = parseFloat(protein);
-    const numericPesticide = parseFloat(pesticide);
-    const numericPh = parseFloat(ph);
-
-    const product = new Product({
-      farmerId,
-      name, category,
-      price: numericPrice,
-      quantity: numericQuantity,
-      location,
-      image: `/uploads/${req.files["image"][0].filename}`,
-      harvestDate: harvestDate ? new Date(harvestDate) : null,
-      moisture: numericMoisture,
-      protein: numericProtein,
-      pesticideResidue: numericPesticide,
-      soilPh: numericPh,
-      labReport: req.files["labReport"] ? `/uploads/${req.files["labReport"][0].filename}` : null
-    });
-    await product.save();
-
-    // ✅ QR points to HTML certificate page
-    const qrDir = path.join(process.cwd(), "uploads/qrs");
-    if (!fs.existsSync(qrDir)) fs.mkdirSync(qrDir, { recursive: true });
-
-    const serverUrl = "http://localhost:5000"; // change when hosted
-    const qrUrl = `${serverUrl}/product/${product._id}/view`;
-    const qrPath = path.join(qrDir, `${product._id}-authQR.png`);
-    await QRCode.toFile(qrPath, qrUrl);
-
-    product.qrPath = `/uploads/qrs/${product._id}-authQR.png`;
-    await product.save();
-
-    res.json({
-      status: "success",
-      message: "Product added successfully with QR!",
-      product,
-    });
+    const { email } = req.body;
+    const existing = await Consumer.findOne({ email });
+    if (existing) {
+      res.json({ exists: true });
+    } else {
+      res.json({ exists: false });
+    }
   } catch (error) {
-    console.error(error);
-    res.json({ status: "error", message: "Error adding product" });
+    console.error("Error checking email:", error);
+    res.status(500).json({ exists: false, message: "Server error" });
   }
 });
+
 
 // ------------------ CONSUMER ROUTES ------------------
 app.post("/consumer/register", async (req, res) => {
@@ -215,6 +259,36 @@ app.post("/consumer/register", async (req, res) => {
     res.status(500).json({ success: false, message: "Error registering consumer" });
   }
 });
+// ✅ Consumer Login Route
+app.post("/consumer/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find consumer by email
+    const consumer = await Consumer.findOne({ email });
+    if (!consumer) {
+      return res.json({ status: "error", message: "Invalid email or password" });
+    }
+
+    // Compare passwords
+    const isMatch = await bcrypt.compare(password, consumer.password);
+    if (!isMatch) {
+      return res.json({ status: "error", message: "Invalid email or password" });
+    }
+
+    // Success
+    res.json({
+      status: "success",
+      message: "Login successful",
+      consumerId: consumer._id.toString(),
+      name: consumer.name,
+    });
+  } catch (error) {
+    console.error("❌ Consumer Login Error:", error);
+    res.status(500).json({ status: "error", message: "Server error" });
+  }
+});
+
 
 // Get all products
 app.get("/products", async (req, res) => {
