@@ -42,22 +42,21 @@
 <body>
 
   <!-- Navbar -->
-  <nav>
-    <div class="logo">
-      <video autoplay loop muted>
-        <source src="image/agridirect.mp4" type="video/mp4">
-      </video>
-      <span class="logo-text">AgriDirect</span>
-    </div>
-    <ul>
-      <li><a href="shared_homepage.html">HOME</a></li>
-      <li><a href="Marketplace.html">MARKETPLACE</a></li>
-      <li><a href="qr-scan.html">SCAN QR CODE</a></li>
-      <li><a href="about_us.html">ABOUT US</a></li>
-      <li><a href="role.html">LOGIN/SIGN UP</a></li>
-    </ul>
-  </nav>
-
+      <nav>
+      <div class="logo">
+        <video autoplay loop muted>
+          <source src="image/agridirect.mp4" type="video/mp4">
+        </video>
+        <span class="logo-text">AgriDirect</span>
+      </div>
+      <ul>
+        <li><a href="shared_homepage.html">HOME</a></li>
+        <li><a href="marketplace.html">MARKETPLACE</a></li>
+        <li><a id="dashboardLink" href="#">DASHBOARD</a></li>
+        <li><a href="about_us.html">ABOUT US</a></li>
+        <li><a id="authLink" href="role.html">LOGIN/SIGN UP</a></li>
+      </ul>
+    </nav>
   <!-- Consumer Registration Form -->
   <div class="form-container">
     <h2>Register as Consumer</h2>
@@ -196,6 +195,39 @@
       messageDiv.style.display = "block";
       okBtn.style.display = "inline-block";
       okBtn.onclick = () => messageDiv.style.display = "none";
+    }
+  });
+  // ✅ Navbar role-based logic
+  document.addEventListener("DOMContentLoaded", () => {
+    const dashboardLink = document.getElementById("dashboardLink");
+    const authLink = document.getElementById("authLink");
+
+    const userRole = localStorage.getItem("userRole");
+    const consumerName = localStorage.getItem("consumerName");
+    const farmerName = localStorage.getItem("farmerName");
+
+    if (userRole === "farmer") {
+      dashboardLink.href = "marketplacefarmer.html";
+      authLink.textContent = `LOGOUT`;
+      authLink.href = "#";
+      authLink.onclick = () => {
+        localStorage.clear();
+        alert("Logged out successfully!");
+        window.location.href = "shared_homepage.html";
+      };
+    } else if (userRole === "consumer") {
+      dashboardLink.href = "consumer_dashboard.html";
+      authLink.textContent = `LOGOUT `;
+      authLink.href = "#";
+      authLink.onclick = () => {
+        localStorage.clear();
+        alert("Logged out successfully!");
+        window.location.href = "shared_homepage.html";
+      };
+    } else {
+      dashboardLink.href = "role.html";
+      authLink.textContent = "LOGIN/SIGN UP";
+      authLink.href = "role.html";
     }
   });
 </script>

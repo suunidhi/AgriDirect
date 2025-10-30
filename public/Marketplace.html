@@ -181,30 +181,13 @@
       margin-right: 10px;
       border-radius: 5px;
     }
-    .footer-contact, .footer-social { text-align: left; }
     .footer-social a img {
       width: 30px;
       margin: 0 10px;
       transition: transform 0.3s ease-in-out;
     }
     .footer-social a img:hover { transform: scale(1.2); }
-    .footer-copy {
-      margin-top: 15px;
-      font-size: 14px;
-      opacity: 0.8;
-    }
-
-    /* ✅ Fix Buy Now button not clickable */
-    .product-card button {
-      position: relative;
-      z-index: 9999;
-      pointer-events: auto;
-      cursor: pointer;
-    }
-    .product-card.is-flipped .btn-buy,
-    .product-card.is-flipped .btn-sqr {
-      pointer-events: none;
-    }
+    .footer-copy { margin-top: 15px; font-size: 14px; opacity: 0.8; }
   </style>
 </head>
 <body>
@@ -220,9 +203,9 @@
       <ul>
         <li><a href="shared_homepage.html">HOME</a></li>
         <li><a href="marketplace.html">MARKETPLACE</a></li>
-        <li><a href="qr-scan.html">SCAN QR CODE</a></li>
+        <li><a id="dashboardLink" href="#">DASHBOARD</a></li>
         <li><a href="about_us.html">ABOUT US</a></li>
-        <li><a href="role.html">LOGIN/SIGN UP</a></li>
+        <li><a id="authLink" href="role.html">LOGIN/SIGN UP</a></li>
       </ul>
     </nav>
   </header>
@@ -263,149 +246,166 @@
   </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script>
-async function loadProducts() {
-  try {
-    const res = await fetch("http://localhost:5000/products");
-    const data = await res.json();
 
-    if (data.status === "success") {
-      const productGrid = document.getElementById("productGrid");
-      productGrid.innerHTML = "";
+  <script>
+  async function loadProducts() {
+    try {
+      const res = await fetch("http://localhost:5000/products");
+      const data = await res.json();
 
-      data.products.forEach(p => {
-        const wrapper = document.createElement("div");
-        wrapper.className = "card-container";
+      if (data.status === "success") {
+        const productGrid = document.getElementById("productGrid");
+        productGrid.innerHTML = "";
 
-        const productData = encodeURIComponent(JSON.stringify(p));
+        data.products.forEach(p => {
+          const wrapper = document.createElement("div");
+          wrapper.className = "card-container";
 
-        wrapper.innerHTML = `
-          <div class="product-card">
-            <div class="card-side card-front">
-              <img src="http://localhost:5000${p.image}" alt="${p.name}">
-              <div class="product-info">
-                <h5>${p.name}</h5>
-                <p><strong>Category:</strong> ${p.category}</p>
-                <p><strong>Farmer:</strong> ${p.farmerId?.name || "Unknown"}</p>
-                <p><strong>Location:</strong> ${p.location}</p>
-                <p><strong>Quantity:</strong> ${p.quantity} kg</p>
-                <p class="price"><strong>Price:</strong> ₹${p.price}</p>
-                <div class="btn-group">
-                  <button class="btn-buy"
-                    onclick="event.stopPropagation(); redirectToCheckout('${p._id}', '${p.farmerId?._id}', '${p.name}', ${p.price})">
-                    🛒 Buy Now
-                  </button>
+          const productData = encodeURIComponent(JSON.stringify(p));
 
-                  <button class="btn-sqr"
-                    onclick="event.stopPropagation(); showQR(this, '${productData}')">
-                    Verify Farmer
-                  </button>
+          wrapper.innerHTML = `
+            <div class="product-card">
+              <div class="card-side card-front">
+                <img src="http://localhost:5000${p.image}" alt="${p.name}">
+                <div class="product-info">
+                  <h5>${p.name}</h5>
+                  <p><strong>Category:</strong> ${p.category}</p>
+                  <p><strong>Farmer:</strong> ${p.farmerId?.name || "Unknown"}</p>
+                  <p><strong>Location:</strong> ${p.location}</p>
+                  <p><strong>Quantity:</strong> ${p.quantity} kg</p>
+                  <p class="price"><strong>Price:</strong> ₹${p.price}</p>
+                  <div class="btn-group">
+                    <button class="btn-buy" onclick="event.stopPropagation(); redirectToCheckout('${p._id}', '${p.farmerId?._id}', '${p.name}', ${p.price})">🛒 Buy Now</button>
+                    <button class="btn-sqr" onclick="event.stopPropagation(); showQR(this, '${productData}')">Verify Farmer</button>
+                  </div>
                 </div>
               </div>
+              <div class="card-side card-back">
+                <h5>Scan QR to verify</h5>
+                <div class="qr"></div>
+                <button class="btn btn-outline-success mt-3" onclick="event.stopPropagation(); unflipCard(this)">Back</button>
+              </div>
             </div>
-            <div class="card-side card-back">
-              <h5>Scan QR to verify</h5>
-              <div class="qr"></div>
-              <button class="btn btn-outline-success mt-3" onclick="event.stopPropagation(); unflipCard(this)">Back</button>
-            </div>
-          </div>
-        `;
-        productGrid.appendChild(wrapper);
+          `;
+          productGrid.appendChild(wrapper);
 
-        wrapper.querySelector(".product-card").addEventListener("click", function(e) {
-          if (!e.target.closest("button")) {
-            this.classList.toggle("is-flipped");
-          }
+          wrapper.querySelector(".product-card").addEventListener("click", function(e) {
+            if (!e.target.closest("button")) this.classList.toggle("is-flipped");
+          });
         });
-      });
-    } else {
-      alert("Error loading products");
+
+        // ✅ Add "+ Add Product" card for farmers
+        const userRole = localStorage.getItem("userRole");
+        if (userRole === "farmer") {
+          const addWrapper = document.createElement("div");
+          addWrapper.className = "card-container";
+          addWrapper.innerHTML = `
+            <div class="product-card text-center d-flex flex-column justify-content-center align-items-center border border-success"
+                style="cursor:pointer; height:500px; background:#f1fdf1; border-radius:12px;">
+              <div>
+                <h1 style="font-size:80px; color:#2d6a4f;">+</h1>
+                <h4 style="color:#2d6a4f;">Add New Product</h4>
+              </div>
+            </div>
+          `;
+          addWrapper.addEventListener("click", () => {
+            window.location.href = "farmeraddproduct.html";
+          });
+          productGrid.appendChild(addWrapper);
+        }
+      } else alert("Error loading products");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to fetch products from server");
     }
-  } catch (err) {
-    console.error(err);
-    alert("Failed to fetch products from server");
   }
-}
 
-loadProducts();
+  loadProducts();
 
-// ✅ FIXED BUY BUTTON FUNCTION
-function redirectToCheckout(productId, farmerId, name, price) {
-  const consumerId = localStorage.getItem("consumerId");
-  const isLoggedIn = consumerId && consumerId.trim() !== "";
+  // ✅ Buy logic
+  function redirectToCheckout(productId, farmerId, name, price) {
+    const consumerId = localStorage.getItem("consumerId");
+    const isLoggedIn = consumerId && consumerId.trim() !== "";
 
-  const checkoutData = { productId, farmerId, name, price };
-  localStorage.setItem("checkoutProduct", JSON.stringify(checkoutData));
+    const checkoutData = { productId, farmerId, name, price };
+    localStorage.setItem("checkoutProduct", JSON.stringify(checkoutData));
 
-  if (!isLoggedIn) {
-    alert("Please sign up or login before purchasing.");
-    window.location.href = `consumer_signup18.html?productId=${encodeURIComponent(productId)}&farmerId=${encodeURIComponent(farmerId)}&name=${encodeURIComponent(name)}&price=${encodeURIComponent(price)}`;
-  } else {
-    // ✅ Redirect logged-in consumer to checkout/payment page
-    window.location.href = `checkout.html?productId=${encodeURIComponent(productId)}&farmerId=${encodeURIComponent(farmerId)}&name=${encodeURIComponent(name)}&price=${encodeURIComponent(price)}`;
-  }
-}
-
-// ✅ QR Logic
-function showQR(button, encodedProduct) {
-  const product = JSON.parse(decodeURIComponent(encodedProduct));
-  const card = button.closest(".product-card");
-  card.classList.add("is-flipped");
-
-  setTimeout(() => {
-    const qrContainer = card.querySelector(".qr");
-    qrContainer.innerHTML = "";
-
-    if (product.qrPath) {
-      const img = document.createElement("img");
-      img.src = `http://localhost:5000${product.qrPath}`;
-      img.alt = "Product QR Code";
-      img.style.width = "150px";
-      img.style.height = "150px";
-      img.style.border = "2px dashed #2d6a4f";
-      img.style.borderRadius = "10px";
-      img.style.padding = "5px";
-      img.style.background = "#fff";
-      img.style.cursor = "pointer";
-      img.onclick = () => window.open(img.src, "_blank");
-
-      qrContainer.appendChild(img);
+    if (!isLoggedIn) {
+      alert("Please sign up or login before purchasing.");
+      window.location.href = `consumer_signup18.html?productId=${encodeURIComponent(productId)}&farmerId=${encodeURIComponent(farmerId)}&name=${encodeURIComponent(name)}&price=${encodeURIComponent(price)}`;
     } else {
-      qrContainer.innerHTML = "<p class='text-danger'>QR not available</p>";
+      window.location.href = `checkout.html?productId=${encodeURIComponent(productId)}&farmerId=${encodeURIComponent(farmerId)}&name=${encodeURIComponent(name)}&price=${encodeURIComponent(price)}`;
     }
-  }, 400);
-}
+  }
 
-// ✅ Flip back
-function unflipCard(button) {
-  const card = button.closest(".product-card");
-  card.classList.remove("is-flipped");
-}
+  // ✅ QR logic
+  function showQR(button, encodedProduct) {
+    const product = JSON.parse(decodeURIComponent(encodedProduct));
+    const card = button.closest(".product-card");
+    card.classList.add("is-flipped");
 
-document.addEventListener("DOMContentLoaded", () => {
-  const loginMenuItem = document.querySelector("nav ul li a[href='role.html']");
+    setTimeout(() => {
+      const qrContainer = card.querySelector(".qr");
+      qrContainer.innerHTML = "";
 
-  // Check login status
-  const farmerId = localStorage.getItem("farmerId");
-  const consumerId = localStorage.getItem("consumerId");
+      if (product.qrPath) {
+        const img = document.createElement("img");
+        img.src = `http://localhost:5000${product.qrPath}`;
+        img.alt = "Product QR Code";
+        img.style.width = "150px";
+        img.style.height = "150px";
+        img.style.border = "2px dashed #2d6a4f";
+        img.style.borderRadius = "10px";
+        img.style.padding = "5px";
+        img.style.background = "#fff";
+        img.style.cursor = "pointer";
+        img.onclick = () => window.open(img.src, "_blank");
 
-  if (farmerId || consumerId) {
-    // ✅ Change "Login/Sign Up" → "Logout"
-    loginMenuItem.textContent = "LOGOUT";
-    loginMenuItem.href = "#";
-    loginMenuItem.addEventListener("click", () => {
-      // Confirm logout
-      if (confirm("Are you sure you want to log out?")) {
-        localStorage.clear(); // Clear all session info
-        alert("Logged out successfully!");
-        window.location.href = "shared_homepage.html"; // Redirect to homepage
+        qrContainer.appendChild(img);
+      } else {
+        qrContainer.innerHTML = "<p class='text-danger'>QR not available</p>";
       }
-    });
+    }, 400);
   }
-});
 
+  function unflipCard(button) {
+    const card = button.closest(".product-card");
+    card.classList.remove("is-flipped");
+  }
 
-</script>
+  // ✅ Navbar role-based logic
+  document.addEventListener("DOMContentLoaded", () => {
+    const dashboardLink = document.getElementById("dashboardLink");
+    const authLink = document.getElementById("authLink");
 
+    const userRole = localStorage.getItem("userRole");
+    const consumerName = localStorage.getItem("consumerName");
+    const farmerName = localStorage.getItem("farmerName");
+
+    if (userRole === "farmer") {
+      dashboardLink.href = "marketplacefarmer.html";
+      authLink.textContent = `LOGOUT`;
+      authLink.href = "#";
+      authLink.onclick = () => {
+        localStorage.clear();
+        alert("Logged out successfully!");
+        window.location.href = "shared_homepage.html";
+      };
+    } else if (userRole === "consumer") {
+      dashboardLink.href = "consumer_dashboard.html";
+      authLink.textContent = `LOGOUT `;
+      authLink.href = "#";
+      authLink.onclick = () => {
+        localStorage.clear();
+        alert("Logged out successfully!");
+        window.location.href = "shared_homepage.html";
+      };
+    } else {
+      dashboardLink.href = "role.html";
+      authLink.textContent = "LOGIN/SIGN UP";
+      authLink.href = "role.html";
+    }
+  });
+  </script>
 </body>
 </html>

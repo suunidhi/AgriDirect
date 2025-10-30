@@ -128,11 +128,13 @@ app.post("/farmer/login", async (req, res) => {
     const isMatch = await bcrypt.compare(password, farmer.password);
     if (!isMatch) return res.json({ status: "error", message: "Invalid email or password" });
 
-    res.json({
-      status: "success",
-      message: "Login successful",
-      farmerId: farmer._id.toString(),
-    });
+res.json({
+  status: "success",
+  message: "Login successful",
+  farmerId: farmer._id.toString(),
+  farmerName: farmer.name, // ✅ Add this line
+});
+
   } catch (error) {
     console.error(error);
     res.json({ status: "error", message: "Server error" });
