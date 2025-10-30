@@ -280,6 +280,101 @@
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
   }
+  /* How It Works Section */
+.how-it-works {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: #F4FFC3;
+}
+
+.how-it-works h2 {
+  font-size: 32px;
+  margin-bottom: 15px;
+}
+
+.how-it-works .video-container video {
+  width: 80%;
+  max-width: 800px;
+  border-radius: 10px;
+  margin-bottom: 40px;
+}
+
+/* Row for text + demo video */
+.how-row {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 40px;
+  flex-wrap: wrap;
+  text-align: left;
+}
+
+.how-text {
+  flex: 1 1 50%;
+  max-width: 600px;
+}
+
+.how-text p {
+  font-size: 18px;
+  line-height: 1.6;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+/* MacBook-style frame for the demo */
+.demo-container {
+  flex: 1 1 40%;
+  display: flex;
+  justify-content: center;
+}
+
+.macbook-frame {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  background: #111;
+  border-radius: 20px;
+  padding: 12px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
+  height:100%;
+  margin-top: 50px;
+}
+
+.macbook-frame::before {
+  content: '';
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90px;
+  height: 10px;
+  border-radius: 6px;
+  background: #ccc;
+}
+
+.macbook-frame video {
+  width: 100%;
+  border-radius: 12px;
+  display: block;
+}
+
+/* Responsive behavior */
+@media (max-width: 900px) {
+  .how-row {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .how-text {
+    max-width: 100%;
+  }
+
+  .demo-container {
+    max-width: 100%;
+  }
+}
+
             
     </style></head>
 <body class="background">
@@ -323,21 +418,40 @@
     </section>
     
 
-    <section class="how-it-works">
-        <h2>How It Works</h2>
-        <div class="video-container">
-            <video autoplay loop muted playsinline>
-                <source src="image/how-it-works.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-        </div>
-        <p>AgriDirect empowers farmers with <b>"QR-based verification"</b>, connects them to consumers, and ensures fair pricing & transparency.</p>
-        <p>1.Farmer Verification – Farmers register, get verified, and receive a unique QR code & certification.</p>
-          <p>2.Product Listing – Verified farmers list their natural products on the digital marketplace.</p>
-        <p>3.Consumer Purchase – Buyers browse, scan QR codes for authenticity, and make secure purchases.</p>
-        <p>4.Order & Delivery – Farmers process orders and deliver directly to consumers.</p>
-        <p>5.Impact – Fair pricing for farmers, authentic natural food for consumers, and a transparent supply chain.</p>
-        </section>
+   <section class="how-it-works">
+  <h2>How It Works</h2>
+
+  <!-- Main How-It-Works video (as it is) -->
+  <div class="video-container">
+    <video autoplay loop muted playsinline>
+      <source src="image/how-it-works.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+
+  <!-- Text + Farmer Demo Row -->
+  <div class="how-row">
+    <div class="how-text">
+      <p>AgriDirect empowers farmers with <b>"QR-based verification"</b>, connects them to consumers, and ensures fair pricing & transparency.</p>
+      <p>1. <b>Farmer Verification –</b> Farmers register, get verified, and receive a unique QR code & certification.</p>
+      <p>2. <b>Product Listing –</b> Verified farmers list their natural products on the digital marketplace.</p>
+      <p>3. <b>Consumer Purchase –</b> Buyers browse, scan QR codes for authenticity, and make secure purchases.</p>
+      <p>4. <b>Order & Delivery –</b> Farmers process orders and deliver directly to consumers.</p>
+      <p>5. <b>Impact –</b> Fair pricing for farmers, authentic natural food for consumers, and a transparent supply chain.</p>
+    </div>
+
+    <!-- MacBook-style video on the right -->
+    <div class="demo-container">
+      <div class="macbook-frame">
+        <video autoplay muted loop controls>
+          <source src="image/farmer register.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    </div>
+  </div>
+</section>
+
     
 
 
