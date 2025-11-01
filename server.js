@@ -6,6 +6,14 @@ import multer from "multer";
 import fs from "fs";
 import path from "path";
 import QRCode from "qrcode";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import dotenv from "dotenv";
+dotenv.config();
+console.log("✅ Gemini API Key Loaded:", process.env.GEMINI_API_KEY ? "Yes" : "No");
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+
 
 const app = express();
 app.use(express.json());
@@ -164,10 +172,9 @@ app.post(
         protein,
         pesticide,
         ph,
+        preferences // ✅ added this
       } = req.body;
-      // ✅ Parse preferences as array (comma-separated from frontend)
-const preferenceArray = preferences ? preferences.split(",").map(p => p.trim()) : [];
-const updateData = { name, category, price: numericPrice, quantity: numericQuantity, location, preferences: preferenceArray };
+
       if (!mongoose.Types.ObjectId.isValid(farmerId))
         return res.json({ status: "error", message: "Invalid Farmer ID" });
 
@@ -185,6 +192,18 @@ const updateData = { name, category, price: numericPrice, quantity: numericQuant
       const numericPesticide = parseFloat(pesticide) || 0;
       const numericPh = parseFloat(ph) || 0;
 
+      // ✅ Convert preferences (if array/string)
+      let preferenceArray = [];
+      if (typeof preferences === "string") {
+        try {
+          preferenceArray = JSON.parse(preferences);
+        } catch {
+          preferenceArray = preferences.split(",").map(p => p.trim());
+        }
+      } else if (Array.isArray(preferences)) {
+        preferenceArray = preferences;
+      }
+
       const qrDir = path.join(process.cwd(), "uploads/qrs");
       if (!fs.existsSync(qrDir)) fs.mkdirSync(qrDir, { recursive: true });
 
@@ -192,7 +211,7 @@ const updateData = { name, category, price: numericPrice, quantity: numericQuant
         farmerId,
         name,
         category,
-          preferences: preferenceArray, 
+        preferences: preferenceArray,
         price: numericPrice,
         quantity: numericQuantity,
         location,
@@ -227,7 +246,7 @@ const updateData = { name, category, price: numericPrice, quantity: numericQuant
         product,
       });
     } catch (error) {
-      console.error("❌ Add Product Error:", error);
+      console.error("❌ Add Product Error:", error.message, error.stack);
       res.json({ status: "error", message: "Error adding product" });
     }
   }
@@ -548,6 +567,79 @@ app.get("/product/:id/view", async (req, res) => {
     console.error(err);
     res.send("<h2>Something went wrong!</h2>");
   }
+});
+const aiUpload = multer({ dest: "uploads/chat_images/" });
+
+app.post("/api/ai/chat", aiUpload.single("image"), async (req, res) => {
+  try {
+    const { query, translate } = req.body;
+    const imagePath = req.file ? path.join(process.cwd(), req.file.path) : null;
+
+    let messages = [];
+
+    // If image provided, describe it
+    if (imagePath) {
+      messages.push({
+        role: "user",
+        content: [
+          { type: "text", text: "Describe this image briefly for a farmer." },
+          { type: "image_url", image_url: `file://${imagePath}` },
+        ],
+      });
+    }
+
+    // Add user's text query
+    if (query) {
+      messages.push({ role: "user", content: query });
+    }
+
+
+
+
+let prompt = query || "";
+if (req.file) {
+  prompt = `Describe this image briefly for a farmer.`;
+}
+
+let input = [prompt];
+if (req.file) {
+  input = [
+    {
+      inlineData: {
+        mimeType: req.file.mimetype,
+        data: fs.readFileSync(req.file.path).toString("base64"),
+      },
+    },
+    prompt,
+  ];
+}
+console.log("🟢 Sending prompt to Gemini:", input);
+
+const result = await model.generateContent(input);
+let reply = result.response.text();
+
+if (translate === "hindi") {
+  const translateModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const translation = await translateModel.generateContent(`Translate this into Hindi: ${reply}`);
+  reply = translation.response.text();
+}
+console.log("🟢 Prompt:", prompt);
+console.log("🟢 Gemini Reply:", reply);
+
+    res.json({ success: true, reply });
+  } catch (error) {
+  console.error("❌ AI Chat Error:", error);
+  if (error.response) {
+    console.error("🔴 Response Status:", error.response.status);
+    console.error("🔴 Response Data:", error.response.data);
+  }
+  res.status(500).json({
+    success: false,
+    message: "AI Assistant error: " + (error.message || "Unknown error"),
+  });
+}
+
+
 });
 
 // ------------------ START SERVER ------------------

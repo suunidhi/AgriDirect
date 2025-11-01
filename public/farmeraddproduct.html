@@ -427,9 +427,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
       const formData = new FormData(this);
 
-      // ✅ Handle multiple preferences
-   const selectedPreferences = Array.from(preferencesSelect.selectedOptions).map(opt => opt.value);
+// ✅ Handle multiple preferences
+const preferencesSelect = document.getElementById("preferences");
+const selectedPreferences = Array.from(preferencesSelect.selectedOptions).map(opt => opt.value);
 formData.append("preferences", JSON.stringify(selectedPreferences));
+
 
 
       try {
@@ -451,6 +453,9 @@ formData.append("preferences", JSON.stringify(selectedPreferences));
         alert("⚠ Error connecting to server.");
       }
     });
+  }
+});
+
     
 document.addEventListener("DOMContentLoaded", () => {
   const loginMenuItem = document.querySelector("nav ul li a[href='role.html']");
