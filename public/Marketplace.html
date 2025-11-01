@@ -135,6 +135,59 @@
     }
     .footer-social a img:hover { transform: scale(1.2); }
     .footer-copy { margin-top: 15px; font-size: 14px; opacity: 0.8; }
+    /* 🌾 Filter Container Styling */
+.filter-container {
+  background: #eaf4e0;
+  border: 2px solid #5D8736;
+  border-radius: 10px;
+  padding: 12px 20px;
+  margin: 20px auto 30px auto;
+  width: 90%;
+  max-width: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(93, 135, 54, 0.2);
+  transition: all 0.3s ease-in-out;
+}
+
+.filter-container:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 12px rgba(93, 135, 54, 0.3);
+}
+
+/* Dropdown styling */
+#preferenceFilter {
+  padding: 10px 15px;
+  border: 2px solid #5D8736;
+  border-radius: 8px;
+  background-color: #ffffff;
+  font-size: 16px;
+  font-weight: 500;
+  color: #2d6a4f;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+#preferenceFilter:hover {
+  border-color: #3e7b27;
+  box-shadow: 0 0 6px rgba(46, 125, 50, 0.3);
+}
+
+#preferenceFilter:focus {
+  border-color: #1b4332;
+  box-shadow: 0 0 8px rgba(27, 67, 50, 0.4);
+}
+
+/* Label styling */
+.filter-container label {
+  font-size: 16px;
+  color: #1b4332;
+  font-weight: 600;
+  margin-right: 10px;
+}
+
   </style>
 </head>
 <body>

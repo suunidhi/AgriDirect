@@ -513,12 +513,96 @@
 
   let translateMode = false;
 
-  // Toggle chat box
+  // ✅ Offline Farmer Chatbot Database (English + Hindi answers)
+  const faqData = [
+  { q: "best fertilizer for wheat", 
+    a_en: "For wheat, use a balanced NPK fertilizer (120:60:40). Apply urea in two splits and DAP during sowing.", 
+    a_hi: "गेहूं के लिए संतुलित NPK उर्वरक (120:60:40) का उपयोग करें। बुवाई के समय DAP और दो बार यूरिया डालें।" },
+
+  { q: "how to control pests in rice", 
+    a_en: "Use neem-based bio-pesticides and ensure proper water drainage. Avoid overuse of chemicals.", 
+    a_hi: "नीम आधारित जैव कीटनाशकों का उपयोग करें और उचित जल निकासी सुनिश्चित करें। रासायनिक दवाओं का अधिक उपयोग न करें।" },
+
+  { q: "how to increase crop yield", 
+    a_en: "Use high-yield seeds, balanced fertilizer, proper irrigation, and crop rotation to maintain soil fertility.", 
+    a_hi: "अधिक उत्पादन के लिए उच्च गुणवत्ता वाले बीज, संतुलित उर्वरक, सही सिंचाई और फसल चक्र अपनाएं।" },
+
+  { q: "organic farming tips", 
+    a_en: "Use compost, green manure, crop rotation, and bio-pesticides. Avoid synthetic fertilizers and chemicals.", 
+    a_hi: "कम्पोस्ट, हरी खाद, फसल चक्र और जैव कीटनाशकों का उपयोग करें। रासायनिक उर्वरकों से बचें।" },
+
+  { q: "best time to sow wheat", 
+    a_en: "The ideal time is between mid-November to early December, depending on the region.", 
+    a_hi: "गेहूं की बुवाई का सही समय नवंबर के मध्य से दिसंबर की शुरुआत तक होता है, क्षेत्र के अनुसार।" },
+
+  { q: "how to store grains safely", 
+    a_en: "Keep grains dry, use airtight containers, and treat with neem leaves or dry neem oil for pest prevention.", 
+    a_hi: "अनाज को सूखा रखें, एयरटाइट कंटेनर का उपयोग करें और नीम की पत्तियों या तेल से सुरक्षित करें।" },
+
+  { q: "what is drip irrigation", 
+    a_en: "Drip irrigation supplies water directly to the roots using pipes. It saves up to 50% water and improves yield.", 
+    a_hi: "ड्रिप सिंचाई में पाइप से सीधे पौधों की जड़ों में पानी दिया जाता है। यह लगभग 50% पानी बचाता है।" },
+
+  { q: "how to test soil", 
+    a_en: "You can visit your nearest Krishi Vigyan Kendra (KVK) or use government-approved soil testing kits.", 
+    a_hi: "आप अपने नजदीकी कृषि विज्ञान केंद्र (KVK) जा सकते हैं या सरकारी मिट्टी परीक्षण किट का उपयोग कर सकते हैं।" },
+
+  { q: "crop insurance scheme", 
+    a_en: "Pradhan Mantri Fasal Bima Yojana provides insurance for crop loss due to natural calamities.", 
+    a_hi: "प्रधानमंत्री फसल बीमा योजना प्राकृतिक आपदाओं से फसल नुकसान पर बीमा प्रदान करती है।" },
+
+  { q: "how to sell crops online", 
+    a_en: "You can sell through AgriDirect Marketplace or platforms like eNAM, KisanMandi, and AgriBazaar.", 
+    a_hi: "आप अपनी फसलें AgriDirect मार्केटप्लेस या eNAM, किसानमंडी, और एग्रीबाजार जैसे प्लेटफार्मों पर बेच सकते हैं।" },
+
+  { q: "what is kisan credit card", 
+    a_en: "KCC provides short-term credit to farmers at low interest for agricultural expenses.", 
+    a_hi: "किसान क्रेडिट कार्ड (KCC) किसानों को कृषि कार्यों के लिए कम ब्याज पर अल्पकालिक ऋण प्रदान करता है।" },
+
+  { q: "how to prevent crop diseases", 
+    a_en: "Use disease-resistant varieties, maintain proper spacing, and apply organic fungicides when needed.", 
+    a_hi: "रोग-प्रतिरोधी किस्मों का उपयोग करें, पौधों के बीच उचित दूरी रखें और आवश्यक होने पर जैविक फफूंदनाशी लगाएं।" },
+
+  { q: "benefits of mulching", 
+    a_en: "Mulching retains soil moisture, prevents weed growth, and improves soil health.", 
+    a_hi: "मल्चिंग मिट्टी की नमी बनाए रखता है, खरपतवार को रोकता है और मिट्टी की गुणवत्ता सुधारता है।" },
+
+  { q: "best crops for dry land", 
+    a_en: "Bajra, jowar, groundnut, and pulses like moong or tur are suitable for dry lands.", 
+    a_hi: "सूखी भूमि के लिए बाजरा, ज्वार, मूंगफली और दालें जैसे मूंग व तुअर उपयुक्त हैं।" },
+
+  { q: "how to start dairy farming", 
+    a_en: "Start with 2–5 cows or buffaloes, ensure proper shelter, hygiene, and regular veterinary checkups.", 
+    a_hi: "2-5 गायों या भैंसों से शुरू करें, उचित शेड, सफाई और नियमित पशु चिकित्सक जांच सुनिश्चित करें।" },
+
+  { q: "government subsidy for farmers", 
+    a_en: "Visit PM-KISAN and NABARD websites for details on current government subsidy schemes.", 
+    a_hi: "वर्तमान सरकारी सब्सिडी योजनाओं की जानकारी के लिए PM-KISAN और NABARD की वेबसाइट पर जाएं।" },
+
+  { q: "how to compost at home", 
+    a_en: "Use dry leaves, kitchen waste, and cow dung in a pit. Turn it every 15 days to aerate.", 
+    a_hi: "सूखे पत्ते, रसोई का कचरा और गोबर को एक गड्ढे में डालें। हर 15 दिन में इसे पलटें ताकि हवा लगती रहे।" },
+
+  { q: "how to increase soil fertility", 
+    a_en: "Use crop rotation, green manure, compost, and bio-fertilizers like Rhizobium and Azotobacter.", 
+    a_hi: "फसल चक्र, हरी खाद, कम्पोस्ट और राइजोबियम व एजोटोबैक्टर जैसे जैव उर्वरकों का उपयोग करें।" },
+
+  { q: "how to save water in farming", 
+    a_en: "Adopt drip or sprinkler irrigation, rainwater harvesting, and mulching to reduce evaporation.", 
+    a_hi: "ड्रिप या स्प्रिंकलर सिंचाई, वर्षा जल संचयन और मल्चिंग अपनाकर पानी की बचत करें।" },
+
+  { q: "best high profit crops", 
+    a_en: "Tomato, chili, mushroom, and medicinal plants like aloe vera give high profits with proper care.", 
+    a_hi: "टमाटर, मिर्च, मशरूम और औषधीय पौधे जैसे एलोवेरा उचित देखभाल के साथ अधिक लाभ देते हैं।" }
+];
+
+
+  // ✅ Toggle chat box
   chatToggleBtn.addEventListener("click", () => {
     chatBox.style.display = chatBox.style.display === "block" ? "none" : "block";
   });
 
-  // Tooltip hover effect
+  // ✅ Tooltip hover
   chatToggleBtn.addEventListener("mouseenter", () => {
     chatTooltip.style.visibility = "visible";
     chatTooltip.style.opacity = "1";
@@ -528,45 +612,39 @@
     chatTooltip.style.opacity = "0";
   });
 
-  // Translate mode toggle
+  // ✅ Translate mode toggle (Hindi/English)
   translateBtn.addEventListener("click", () => {
     translateMode = !translateMode;
-    translateBtn.style.background = translateMode ? "#d4edda" : "#f5f5f5";
+    translateBtn.style.background = translateMode ? "#c9f7ca" : "#f5f5f5";
+    translateBtn.textContent = translateMode ? "Switch to English 🇬🇧" : "Translate to Hindi 🇮🇳";
   });
 
-  // Send message
-  sendBtn.addEventListener("click", async () => {
-    const query = chatInput.value.trim();
-    const imageFile = chatImage.files[0];
+  // ✅ Send message (Offline Chatbot)
+  sendBtn.addEventListener("click", () => {
+    const query = chatInput.value.trim().toLowerCase();
+    if (!query) return alert("Please type your question!");
 
-    if (!query && !imageFile) return alert("Please type a question or upload an image!");
-
-    const formData = new FormData();
-    formData.append("query", query);
-    formData.append("translate", translateMode ? "hindi" : "no");
-    if (imageFile) formData.append("image", imageFile);
-
-    chatMessages.innerHTML += `<p><b>👨‍🌾 You:</b> ${query || "📷 (Image Uploaded)"}</p>`;
+    chatMessages.innerHTML += `<p><b>👨‍🌾 You:</b> ${query}</p>`;
     chatInput.value = "";
-    chatImage.value = "";
 
-    try {
-      const res = await fetch("http://localhost:5000/api/ai/chat", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await res.json();
-      if (data.success) {
-        chatMessages.innerHTML += `<p><b>🤖 AI:</b> ${data.reply}</p>`;
-      } else {
-        chatMessages.innerHTML += `<p style='color:red;'>AI Assistant error.</p>`;
+    // Find best matching answer
+    let found = false;
+    for (let item of faqData) {
+      if (query.includes(item.q)) {
+        const answer = translateMode ? item.a_hi : item.a_en;
+        chatMessages.innerHTML += `<p><b>🤖 AI:</b> ${answer}</p>`;
+        found = true;
+        break;
       }
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    } catch (err) {
-      console.error(err);
-      chatMessages.innerHTML += `<p style='color:red;'>Server error.</p>`;
     }
+
+    if (!found) {
+      chatMessages.innerHTML += `<p><b>🤖 AI:</b> ${translateMode 
+        ? "माफ़ करें, मेरे पास इसका उत्तर नहीं है। कृपया उर्वरक, सिंचाई या फसल उत्पादन से संबंधित प्रश्न पूछें।"
+        : "Sorry, I don’t have an answer for that yet. Try asking about fertilizers, irrigation, or crop yield!"}</p>`;
+    }
+
+    chatMessages.scrollTop = chatMessages.scrollHeight;
   });
 </script>
 
