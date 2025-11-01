@@ -51,6 +51,7 @@ const productSchema = new mongoose.Schema({
   farmerId: { type: mongoose.Schema.Types.ObjectId, ref: "Farmer", required: true },
   name: String,
   category: String,
+  preferences: { type: [String], default: [] }, // ✅ CHANGE HERE
   price: Number,
   quantity: Number,
   location: String,
@@ -63,6 +64,7 @@ const productSchema = new mongoose.Schema({
   labReport: String,
   qrPath: String,
 });
+
 const Product = mongoose.model("Product", productSchema);
 
 const orderSchema = new mongoose.Schema({
@@ -161,7 +163,9 @@ app.post(
         pesticide,
         ph,
       } = req.body;
-
+      // ✅ Parse preferences as array (comma-separated from frontend)
+const preferenceArray = preferences ? preferences.split(",").map(p => p.trim()) : [];
+const updateData = { name, category, price: numericPrice, quantity: numericQuantity, location, preferences: preferenceArray };
       if (!mongoose.Types.ObjectId.isValid(farmerId))
         return res.json({ status: "error", message: "Invalid Farmer ID" });
 
@@ -186,6 +190,7 @@ app.post(
         farmerId,
         name,
         category,
+          preferences: preferenceArray, 
         price: numericPrice,
         quantity: numericQuantity,
         location,

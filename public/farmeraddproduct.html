@@ -242,7 +242,31 @@
         padding: 20px;
       }
     }
-  </style>
+  
+.custom-select {
+  width: 100%;
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: 2px solid #000000;
+  background: #f4fff9;
+  color: #000000;
+  font-size: 16px;
+  font-weight: bold;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.custom-select:hover {
+  border-color: #1b4332;
+  background: #e6ffe6;
+}
+
+.custom-select:focus {
+  border-color: #1b4332;
+  background: #d9ffda;
+  box-shadow: 0 0 5px #1b4332;
+}
+</style>
 </head>
 <body>
 
@@ -284,6 +308,23 @@
         <option value="others">🛍 Others</option>
       </select>
 
+<!--preferences select box-->
+
+      <label for="preferences">Who Can Use This Product?</label>
+<select id="preferences" name="preferences" multiple required class="custom-select">
+  <option value="all">All</option>
+  <option value="jain">Jain</option>
+  <option value="swaminarayan">Swaminarayan</option>
+  <option value="vegan">Vegan</option>
+  <option value="organic">Organic</option>
+  <option value="fruitarian">Fruitarian</option>
+  <option value="gluten-free">Gluten-Free</option>
+</select>
+<small style="display:block; color:#2d6a4f; margin-top:5px;">
+  Hold Ctrl (or Cmd) to select multiple options
+</small>
+
+      
       <label for="price">Price per Unit (₹/kg)</label>
       <input type="number" id="price" name="price" min="1" placeholder="Enter price per kg" required>
 
@@ -345,35 +386,57 @@
   </footer>
 
   <script>
-    // ✅ Navbar Toggle
-    document.addEventListener("DOMContentLoaded", function() {
-      const navToggle = document.getElementById('nav-toggle');
-      const navUl = document.querySelector('nav ul');
-      if (navToggle) {
-        navToggle.addEventListener('click', function() {
-          navUl.classList.toggle('show');
-        });
+document.addEventListener("DOMContentLoaded", function() {
+  // ✅ Navbar Toggle
+  const navToggle = document.getElementById('nav-toggle');
+  const navUl = document.querySelector('nav ul');
+  if (navToggle) {
+    navToggle.addEventListener('click', function() {
+      navUl.classList.toggle('show');
+    });
+  }
+
+  // ✅ Update Login/Logout Menu Item
+  const loginMenuItem = document.querySelector("nav ul li a[href='role.html']");
+  const farmerId = localStorage.getItem("farmerId");
+  const consumerId = localStorage.getItem("consumerId");
+
+  if (loginMenuItem && (farmerId || consumerId)) {
+    loginMenuItem.textContent = "LOGOUT";
+    loginMenuItem.href = "#";
+    loginMenuItem.addEventListener("click", () => {
+      if (confirm("Are you sure you want to log out?")) {
+        localStorage.clear();
+        alert("Logged out successfully!");
+        window.location.href = "shared_homepage.html";
       }
     });
+  }
 
-    // ✅ Product Form Submission
-    document.getElementById("addProductForm").addEventListener("submit", async function(e) {
+  // ✅ Product Form Submission
+  const addProductForm = document.getElementById("addProductForm");
+  if (addProductForm) {
+    addProductForm.addEventListener("submit", async function(e) {
       e.preventDefault();
 
-      const formData = new FormData(this);
       const farmerId = localStorage.getItem("farmerId");
       if (!farmerId) {
         alert("⚠ Please login as a farmer to add products.");
         return;
       }
-      formData.append("farmerId", farmerId);
+
+      const formData = new FormData(this);
+
+      // ✅ Handle multiple preferences
+   const selectedPreferences = Array.from(preferencesSelect.selectedOptions).map(opt => opt.value);
+formData.append("preferences", JSON.stringify(selectedPreferences));
+
 
       try {
         const response = await fetch(`http://localhost:5000/farmer/addProduct/${farmerId}`, {
-        method: "POST",
-        body: formData
-      });
-
+          method: "POST",
+          body: formData
+        });
 
         const data = await response.json();
 
@@ -384,34 +447,13 @@
           alert("❌ Failed to add product: " + (data.message || "Unknown error"));
         }
       } catch (err) {
-        console.error(err);
+        console.error("Error submitting product:", err);
         alert("⚠ Error connecting to server.");
-      }
-    });
-    
-document.addEventListener("DOMContentLoaded", () => {
-  const loginMenuItem = document.querySelector("nav ul li a[href='role.html']");
-
-  // Check login status
-  const farmerId = localStorage.getItem("farmerId");
-  const consumerId = localStorage.getItem("consumerId");
-
-  if (farmerId || consumerId) {
-    // ✅ Change "Login/Sign Up" → "Logout"
-    loginMenuItem.textContent = "LOGOUT";
-    loginMenuItem.href = "#";
-    loginMenuItem.addEventListener("click", () => {
-      // Confirm logout
-      if (confirm("Are you sure you want to log out?")) {
-        localStorage.clear(); // Clear all session info
-        alert("Logged out successfully!");
-        window.location.href = "shared_homepage.html"; // Redirect to homepage
       }
     });
   }
 });
+</script>
 
-
-  </script>
 </body>
 </html>
