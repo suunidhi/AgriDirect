@@ -367,6 +367,128 @@
       authLink.href = "role.html";
     }
   });
+// ✅ FILTER PRODUCTS BY PREFERENCE (FINAL WORKING VERSION)
+document.getElementById("preferenceFilter").addEventListener("change", async (e) => {
+  const pref = e.target.value;
+  let url = "http://localhost:5000/products";
+  if (pref) url += `?preferences=${pref}`;
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+
+    const productGrid = document.getElementById("productGrid");
+    productGrid.innerHTML = "";
+
+    // ✅ Check for success response
+    if (data.status === "success" && Array.isArray(data.products)) {
+      // ✅ Case 1: No products found
+      if (data.products.length === 0) {
+        productGrid.innerHTML = `
+          <div class="no-products" style="
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #555;
+            font-family: 'Poppins', sans-serif;
+            width: 100%;
+          ">
+            <h3 style="font-size: 1.8rem; color: #2d6a4f; margin-bottom: 10px;">
+              No products found for this category 😔
+            </h3>
+            <p style="font-size: 1rem; color: #777;">
+              Try changing your filters or check back later.
+            </p>
+          </div>
+        `;
+
+        // ✅ Still show "+ Add Product" card if farmer logged in
+        const userRole = localStorage.getItem("userRole");
+        if (userRole === "farmer") {
+          const addWrapper = document.createElement("div");
+          addWrapper.className = "card-container";
+          addWrapper.innerHTML = `
+            <div class="product-card text-center d-flex flex-column justify-content-center align-items-center border border-success"
+                style="cursor:pointer; height:500px; background:#f1fdf1; border-radius:12px;">
+              <div>
+                <h1 style="font-size:80px; color:#2d6a4f;">+</h1>
+                <h4 style="color:#2d6a4f;">Add New Product</h4>
+              </div>
+            </div>
+          `;
+          addWrapper.addEventListener("click", () => {
+            window.location.href = "farmeraddproduct.html";
+          });
+          productGrid.appendChild(addWrapper);
+        }
+        return;
+      }
+
+      // ✅ Case 2: Render products normally
+      data.products.forEach(p => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "card-container";
+        const productData = encodeURIComponent(JSON.stringify(p));
+
+        wrapper.innerHTML = `
+          <div class="product-card">
+            <div class="card-side card-front">
+              <img src="http://localhost:5000${p.image}" alt="${p.name}">
+              <div class="product-info">
+                <h5>${p.name}</h5>
+                <p><strong>Category:</strong> ${p.category}</p>
+                <p><strong>Farmer:</strong> ${p.farmerId?.name || "Unknown"}</p>
+                <p><strong>Location:</strong> ${p.location}</p>
+                <p><strong>Quantity:</strong> ${p.quantity} kg</p>
+                <p class="price"><strong>Price:</strong> ₹${p.price}</p>
+                <div class="btn-group">
+                  <button class="btn-buy" onclick="event.stopPropagation(); redirectToCheckout('${p._id}', '${p.farmerId?._id}', '${p.name}', ${p.price})">🛒 Buy Now</button>
+                  <button class="btn-sqr" onclick="event.stopPropagation(); showQR(this, '${productData}')">Verify Farmer</button>
+                </div>
+              </div>
+            </div>
+            <div class="card-side card-back">
+              <h5>Scan QR to verify</h5>
+              <div class="qr"></div>
+              <button class="btn btn-outline-success mt-3" onclick="event.stopPropagation(); unflipCard(this)">Back</button>
+            </div>
+          </div>
+        `;
+        productGrid.appendChild(wrapper);
+
+        wrapper.querySelector(".product-card").addEventListener("click", function(e) {
+          if (!e.target.closest("button")) this.classList.toggle("is-flipped");
+        });
+      });
+
+      // ✅ Add "+ Add Product" card last for farmers
+      const userRole = localStorage.getItem("userRole");
+      if (userRole === "farmer") {
+        const addWrapper = document.createElement("div");
+        addWrapper.className = "card-container";
+        addWrapper.innerHTML = `
+          <div class="product-card text-center d-flex flex-column justify-content-center align-items-center border border-success"
+              style="cursor:pointer; height:500px; background:#f1fdf1; border-radius:12px;">
+            <div>
+              <h1 style="font-size:80px; color:#2d6a4f;">+</h1>
+              <h4 style="color:#2d6a4f;">Add New Product</h4>
+            </div>
+          </div>
+        `;
+        addWrapper.addEventListener("click", () => {
+          window.location.href = "farmeraddproduct.html";
+        });
+        productGrid.appendChild(addWrapper);
+      }
+    } else {
+      console.error("Unexpected response format:", data);
+    }
+  } catch (err) {
+    console.error("Error filtering products:", err);
+  }
+});
   </script>
 </body>
 </html>

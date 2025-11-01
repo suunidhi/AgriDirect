@@ -331,16 +331,70 @@ app.get("/farmer/getProducts/:farmerId", async (req, res) => {
     res.json({ status: "error", message: "Error fetching products" });
   }
 });
-// Get all products
+// ✅ Get all products with optional filters
 app.get("/products", async (req, res) => {
   try {
-    const products = await Product.find().populate("farmerId", "name location");
-    res.json({ status: "success", products });
+    const { category, minPrice, maxPrice, location, preferences, sortBy } = req.query;
+
+    let filter = {};
+
+    // Category Filter
+    if (category) filter.category = category;
+
+    // Price Range Filter
+    if (minPrice || maxPrice) {
+      filter.price = {};
+      if (minPrice) filter.price.$gte = parseFloat(minPrice);
+      if (maxPrice) filter.price.$lte = parseFloat(maxPrice);
+    }
+
+    // Location Filter (from product's location)
+    if (location) {
+      filter.location = { $regex: new RegExp(location, "i") }; // case-insensitive
+    }
+
+    // Preferences Filter
+    if (preferences) {
+      const prefArray = Array.isArray(preferences)
+        ? preferences
+        : preferences.split(",").map((p) => p.trim());
+      filter.preferences = { $in: prefArray };
+    }
+
+    // ✅ Sorting logic
+    let sortQuery = {};
+    if (sortBy) {
+      switch (sortBy) {
+        case "price_asc":
+          sortQuery.price = 1;
+          break;
+        case "price_desc":
+          sortQuery.price = -1;
+          break;
+        case "newest":
+          sortQuery._id = -1;
+          break;
+        default:
+          break;
+      }
+    }
+
+    const products = await Product.find(filter)
+      .populate("farmerId", "name location")
+      .sort(sortQuery);
+
+    res.json({
+      status: "success",
+      count: products.length,
+      filters: filter,
+      products,
+    });
   } catch (error) {
-    console.error(error);
-    res.json({ status: "error", message: "Error fetching all products" });
+    console.error("❌ Product Filter Error:", error);
+    res.json({ status: "error", message: "Error fetching filtered products" });
   }
 });
+
 // ✅ Update product
 app.put("/farmer/updateProduct/:id", upload.single("image"), async (req, res) => {
   try {
