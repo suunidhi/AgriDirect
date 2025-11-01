@@ -139,6 +139,39 @@ form.addEventListener('submit', async (e) => {
     });
   }
 });
+// ✅ Navbar role-based logic
+  document.addEventListener("DOMContentLoaded", () => {
+    const dashboardLink = document.getElementById("dashboardLink");
+    const authLink = document.getElementById("authLink");
+
+    const userRole = localStorage.getItem("userRole");
+    const consumerName = localStorage.getItem("consumerName");
+    const farmerName = localStorage.getItem("farmerName");
+
+    if (userRole === "farmer") {
+      dashboardLink.href = "farmermarketplace.html";
+      authLink.textContent = `LOGOUT`;
+      authLink.href = "#";
+      authLink.onclick = () => {
+        localStorage.clear();
+        alert("Logged out successfully!");
+        window.location.href = "shared_homepage.html";
+      };
+    } else if (userRole === "consumer") {
+      dashboardLink.href = "consumer_dashboard.html";
+      authLink.textContent = `LOGOUT `;
+      authLink.href = "#";
+      authLink.onclick = () => {
+        localStorage.clear();
+        alert("Logged out successfully!");
+        window.location.href = "shared_homepage.html";
+      };
+    } else {
+      dashboardLink.href = "role.html";
+      authLink.textContent = "LOGIN/SIGN UP";
+      authLink.href = "role.html";
+    }
+  });
 </script>
 </body>
 </html>

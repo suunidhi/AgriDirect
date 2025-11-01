@@ -101,52 +101,61 @@
     nav ul li a { text-decoration: none; color: #ffffff; font-weight: bold; }
     nav ul li a:hover { color:#F4FFC3; }
 
-    footer { background:white; color:#809D3C; padding: 30px 20px; text-align: center; border-top: 2px solid #5D8736; }
-    .footer-container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; max-width: 1200px; margin: auto; }
-    .footer-logo { display: flex; align-items: center; font-size: 22px; font-weight: bold; }
-    .footer-logo video { width: 50px; height: 50px; margin-right: 10px; border-radius: 5px; }
-    .footer-contact, .footer-social { text-align: left; }
-    .footer-social a img { width: 30px; margin: 0 10px; transition: transform 0.3s ease-in-out; }
+    footer {
+      background:white;
+      color:#809D3C;
+      padding: 30px 20px;
+      text-align: center;
+      border-top: 2px solid #5D8736;
+    }
+    .footer-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      font-size: 22px;
+      font-weight: bold;
+    }
+    .footer-logo video {
+      width: 50px;
+      height: 50px;
+      margin-right: 10px;
+      border-radius: 5px;
+    }
+    .footer-social a img {
+      width: 30px;
+      margin: 0 10px;
+      transition: transform 0.3s ease-in-out;
+    }
     .footer-social a img:hover { transform: scale(1.2); }
     .footer-copy { margin-top: 15px; font-size: 14px; opacity: 0.8; }
-
-    /* ✅ Fix Buy Now button not clickable */
-    .product-card button { position: relative; z-index: 9999; pointer-events: auto; cursor: pointer; }
-    .product-card.is-flipped .btn-buy, .product-card.is-flipped .btn-sqr { pointer-events: none; }
-
-    /* ✅ Filter dropdown style */
-    .filter-container {
-      text-align: center;
-      margin: 20px 0;
-    }
-    #preferenceFilter {
-      padding: 5px 10px;
-      border-radius: 5px;
-      border: 1px solid #2d6a4f;
-      background: #f4fff9;
-      color: #2d6a4f;
-    }
   </style>
 </head>
 <body>
 
-<header>
-  <nav>
-    <div class="logo">
-      <video autoplay loop muted>
-        <source src="image/agridirect.mp4" type="video/mp4">
-      </video>
-      <span class="logo-text">AgriDirect</span>
-    </div>
-    <ul>
-      <li><a href="shared_homepage.html">HOME</a></li>
-      <li><a href="marketplace.html">MARKETPLACE</a></li>
-      <li><a href="qr-scan.html">SCAN QR CODE</a></li>
-      <li><a href="about_us.html">ABOUT US</a></li>
-      <li><a href="role.html">LOGIN/SIGN UP</a></li>
-    </ul>
-  </nav>
-</header>
+  <header>
+    <nav>
+      <div class="logo">
+        <video autoplay loop muted>
+          <source src="image/agridirect.mp4" type="video/mp4">
+        </video>
+        <span class="logo-text">AgriDirect</span>
+      </div>
+      <ul>
+        <li><a href="shared_homepage.html">HOME</a></li>
+        <li><a href="marketplace.html">MARKETPLACE</a></li>
+        <li><a id="dashboardLink" href="#">DASHBOARD</a></li>
+        <li><a href="about_us.html">ABOUT US</a></li>
+        <li><a id="authLink" href="role.html">LOGIN/SIGN UP</a></li>
+      </ul>
+    </nav>
+  </header>
 
 <main>
   <marquee behavior="scroll" direction="left" scrollamount="8" style="background:#F4FFC3; color:#2d6a4f; font-size:20px; font-weight:bold; padding:10px; border-bottom:2px solid #5D8736;">
@@ -197,172 +206,167 @@
   <p class="footer-copy">&copy; 2025 AgriDirect. All Rights Reserved.</p>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script>
-// -------------------- Load Products --------------------
-async function loadProducts() {
-  try {
-    const res = await fetch("http://localhost:5000/products");
-    const data = await res.json();
-    if (data.status === "success") {
-      displayProducts(data.products);
-    } else {
-      alert("Error loading products");
-    }
-  } catch (err) {
-    console.error(err);
-    alert("Failed to fetch products from server");
-  }
-}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-// -------------------- Display Products --------------------
-function displayProducts(products) {
-  const productGrid = document.getElementById("productGrid");
-  productGrid.innerHTML = "";
+  <script>
+  async function loadProducts() {
+    try {
+      const res = await fetch("http://localhost:5000/products");
+      const data = await res.json();
 
-  const selectedPreference = document.getElementById("preferenceFilter").value;
+      if (data.status === "success") {
+        const productGrid = document.getElementById("productGrid");
+        productGrid.innerHTML = "";
 
-  // ✅ Filter products by user-selected preference
-  const filteredProducts = selectedPreference && selectedPreference !== ""
-    ? products.filter(p => Array.isArray(p.preferences) && p.preferences.includes(selectedPreference))
-    : products;
+        data.products.forEach(p => {
+          const wrapper = document.createElement("div");
+          wrapper.className = "card-container";
 
-  filteredProducts.forEach(p => {
-    const wrapper = document.createElement("div");
-    wrapper.className = "card-container";
+          const productData = encodeURIComponent(JSON.stringify(p));
 
-    const productData = encodeURIComponent(JSON.stringify(p));
-
-    wrapper.innerHTML = `
-      <div class="product-card">
-        <div class="card-side card-front">
-          <img src="http://localhost:5000${p.image}" alt="${p.name}">
-          <div class="product-info">
-            <h5>${p.name}</h5>
-            <p><strong>Category:</strong> ${p.category}</p>
-            <p><strong>Farmer:</strong> ${p.farmerId?.name || "Unknown"}</p>
-            <p><strong>Location:</strong> ${p.location}</p>
-            <p><strong>Quantity:</strong> ${p.quantity} kg</p>
-            <p class="price"><strong>Price:</strong> ₹${p.price}</p>
-            <div class="btn-group">
-              <button class="btn-buy" onclick="event.stopPropagation(); redirectToCheckout('${p._id}', '${p.farmerId?._id}', '${p.name}', ${p.price})">🛒 Buy Now</button>
-              <button class="btn-sqr" onclick="event.stopPropagation(); showQR(this, '${productData}')">Verify Farmer</button>
+          wrapper.innerHTML = `
+            <div class="product-card">
+              <div class="card-side card-front">
+                <img src="http://localhost:5000${p.image}" alt="${p.name}">
+                <div class="product-info">
+                  <h5>${p.name}</h5>
+                  <p><strong>Category:</strong> ${p.category}</p>
+                  <p><strong>Farmer:</strong> ${p.farmerId?.name || "Unknown"}</p>
+                  <p><strong>Location:</strong> ${p.location}</p>
+                  <p><strong>Quantity:</strong> ${p.quantity} kg</p>
+                  <p class="price"><strong>Price:</strong> ₹${p.price}</p>
+                  <div class="btn-group">
+                    <button class="btn-buy" onclick="event.stopPropagation(); redirectToCheckout('${p._id}', '${p.farmerId?._id}', '${p.name}', ${p.price})">🛒 Buy Now</button>
+                    <button class="btn-sqr" onclick="event.stopPropagation(); showQR(this, '${productData}')">Verify Farmer</button>
+                  </div>
+                </div>
+              </div>
+              <div class="card-side card-back">
+                <h5>Scan QR to verify</h5>
+                <div class="qr"></div>
+                <button class="btn btn-outline-success mt-3" onclick="event.stopPropagation(); unflipCard(this)">Back</button>
+              </div>
             </div>
-          </div>
-        </div>
-        <div class="card-side card-back">
-          <h5>Scan QR to verify</h5>
-          <div class="qr"></div>
-          <button class="btn btn-outline-success mt-3" onclick="event.stopPropagation(); unflipCard(this)">Back</button>
-        </div>
-      </div>
-    `;
+          `;
+          productGrid.appendChild(wrapper);
 
-    // Flip card on click except buttons
-    wrapper.querySelector(".product-card").addEventListener("click", function(e) {
-      if (!e.target.closest("button")) this.classList.toggle("is-flipped");
-    });
+          wrapper.querySelector(".product-card").addEventListener("click", function(e) {
+            if (!e.target.closest("button")) this.classList.toggle("is-flipped");
+          });
+        });
 
-    productGrid.appendChild(wrapper);
-  });
-
-  // -------------------- Add "Add Product" Card for Farmers --------------------
-  if (localStorage.getItem("userRole") === "farmer") {
-    const addWrapper = document.createElement("div");
-    addWrapper.className = "card-container";
-    addWrapper.innerHTML = `
-      <div class="product-card text-center d-flex flex-column justify-content-center align-items-center border border-success"
-           style="cursor:pointer; height:500px; background:#f1fdf1; border-radius:12px;">
-        <div>
-          <h1 style="font-size:80px; color:#2d6a4f;">+</h1>
-          <h4 style="color:#2d6a4f;">Add New Product</h4>
-        </div>
-      </div>
-    `;
-    addWrapper.addEventListener("click", () => {
-      window.location.href = "farmeraddproduct.html";
-    });
-    productGrid.appendChild(addWrapper);
-  }
-}
-
-// -------------------- Preference Filter Listener --------------------
-document.getElementById("preferenceFilter").addEventListener("change", loadProducts);
-
-// -------------------- Initial Load --------------------
-loadProducts();
-
-// -------------------- Checkout Logic --------------------
-function redirectToCheckout(productId, farmerId, name, price) {
-  const consumerId = localStorage.getItem("consumerId");
-  const isLoggedIn = consumerId && consumerId.trim() !== "";
-
-  const checkoutData = { productId, farmerId, name, price };
-  localStorage.setItem("checkoutProduct", JSON.stringify(checkoutData));
-
-  if (!isLoggedIn) {
-    alert("Please sign up or login before purchasing.");
-    window.location.href = `consumer_signup18.html?productId=${encodeURIComponent(productId)}&farmerId=${encodeURIComponent(farmerId)}&name=${encodeURIComponent(name)}&price=${encodeURIComponent(price)}`;
-  } else {
-    window.location.href = `checkout.html?productId=${encodeURIComponent(productId)}&farmerId=${encodeURIComponent(farmerId)}&name=${encodeURIComponent(name)}&price=${encodeURIComponent(price)}`;
-  }
-}
-
-// -------------------- Show QR Code --------------------
-function showQR(button, encodedProduct) {
-  const product = JSON.parse(decodeURIComponent(encodedProduct));
-  const card = button.closest(".product-card");
-  card.classList.add("is-flipped");
-
-  setTimeout(() => {
-    const qrContainer = card.querySelector(".qr");
-    qrContainer.innerHTML = "";
-    if (product.qrPath) {
-      const img = document.createElement("img");
-      img.src = `http://localhost:5000${product.qrPath}`;
-      img.alt = "Product QR Code";
-      img.style.width = "150px";
-      img.style.height = "150px";
-      img.style.border = "2px dashed #2d6a4f";
-      img.style.borderRadius = "10px";
-      img.style.padding = "5px";
-      img.style.background = "#fff";
-      img.style.cursor = "pointer";
-      img.onclick = () => window.open(img.src, "_blank");
-      qrContainer.appendChild(img);
-    } else {
-      qrContainer.innerHTML = "<p class='text-danger'>QR not available</p>";
+        // ✅ Add "+ Add Product" card for farmers
+        const userRole = localStorage.getItem("userRole");
+        if (userRole === "farmer") {
+          const addWrapper = document.createElement("div");
+          addWrapper.className = "card-container";
+          addWrapper.innerHTML = `
+            <div class="product-card text-center d-flex flex-column justify-content-center align-items-center border border-success"
+                style="cursor:pointer; height:500px; background:#f1fdf1; border-radius:12px;">
+              <div>
+                <h1 style="font-size:80px; color:#2d6a4f;">+</h1>
+                <h4 style="color:#2d6a4f;">Add New Product</h4>
+              </div>
+            </div>
+          `;
+          addWrapper.addEventListener("click", () => {
+            window.location.href = "farmeraddproduct.html";
+          });
+          productGrid.appendChild(addWrapper);
+        }
+      } else alert("Error loading products");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to fetch products from server");
     }
-  }, 400);
-}
+  }
 
-// -------------------- Unflip Card --------------------
-function unflipCard(button) {
-  const card = button.closest(".product-card");
-  card.classList.remove("is-flipped");
-}
+  loadProducts();
 
-// -------------------- Login/Logout --------------------
-document.addEventListener("DOMContentLoaded", () => {
-  const loginMenuItem = document.querySelector("nav ul li a[href='role.html']");
-  const farmerId = localStorage.getItem("farmerId");
-  const consumerId = localStorage.getItem("consumerId");
+  // ✅ Buy logic
+  function redirectToCheckout(productId, farmerId, name, price) {
+    const consumerId = localStorage.getItem("consumerId");
+    const isLoggedIn = consumerId && consumerId.trim() !== "";
 
-  if (farmerId || consumerId) {
-    loginMenuItem.textContent = "LOGOUT";
-    loginMenuItem.href = "#";
-    loginMenuItem.addEventListener("click", () => {
-      if (confirm("Are you sure you want to log out?")) {
+    const checkoutData = { productId, farmerId, name, price };
+    localStorage.setItem("checkoutProduct", JSON.stringify(checkoutData));
+
+    if (!isLoggedIn) {
+      alert("Please sign up or login before purchasing.");
+      window.location.href = `consumer_signup18.html?productId=${encodeURIComponent(productId)}&farmerId=${encodeURIComponent(farmerId)}&name=${encodeURIComponent(name)}&price=${encodeURIComponent(price)}`;
+    } else {
+      window.location.href = `checkout.html?productId=${encodeURIComponent(productId)}&farmerId=${encodeURIComponent(farmerId)}&name=${encodeURIComponent(name)}&price=${encodeURIComponent(price)}`;
+    }
+  }
+
+  // ✅ QR logic
+  function showQR(button, encodedProduct) {
+    const product = JSON.parse(decodeURIComponent(encodedProduct));
+    const card = button.closest(".product-card");
+    card.classList.add("is-flipped");
+
+    setTimeout(() => {
+      const qrContainer = card.querySelector(".qr");
+      qrContainer.innerHTML = "";
+
+      if (product.qrPath) {
+        const img = document.createElement("img");
+        img.src = `http://localhost:5000${product.qrPath}`;
+        img.alt = "Product QR Code";
+        img.style.width = "150px";
+        img.style.height = "150px";
+        img.style.border = "2px dashed #2d6a4f";
+        img.style.borderRadius = "10px";
+        img.style.padding = "5px";
+        img.style.background = "#fff";
+        img.style.cursor = "pointer";
+        img.onclick = () => window.open(img.src, "_blank");
+
+        qrContainer.appendChild(img);
+      } else {
+        qrContainer.innerHTML = "<p class='text-danger'>QR not available</p>";
+      }
+    }, 400);
+  }
+
+  function unflipCard(button) {
+    const card = button.closest(".product-card");
+    card.classList.remove("is-flipped");
+  }
+
+  // ✅ Navbar role-based logic
+  document.addEventListener("DOMContentLoaded", () => {
+    const dashboardLink = document.getElementById("dashboardLink");
+    const authLink = document.getElementById("authLink");
+
+    const userRole = localStorage.getItem("userRole");
+    const consumerName = localStorage.getItem("consumerName");
+    const farmerName = localStorage.getItem("farmerName");
+
+    if (userRole === "farmer") {
+      dashboardLink.href = "marketplacefarmer.html";
+      authLink.textContent = `LOGOUT`;
+      authLink.href = "#";
+      authLink.onclick = () => {
         localStorage.clear();
         alert("Logged out successfully!");
         window.location.href = "shared_homepage.html";
-      }
-    });
-  }
-});
-</script>
-
-
-
+      };
+    } else if (userRole === "consumer") {
+      dashboardLink.href = "consumer_dashboard.html";
+      authLink.textContent = `LOGOUT `;
+      authLink.href = "#";
+      authLink.onclick = () => {
+        localStorage.clear();
+        alert("Logged out successfully!");
+        window.location.href = "shared_homepage.html";
+      };
+    } else {
+      dashboardLink.href = "role.html";
+      authLink.textContent = "LOGIN/SIGN UP";
+      authLink.href = "role.html";
+    }
+  });
+  </script>
 </body>
 </html>
